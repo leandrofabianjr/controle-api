@@ -25,6 +25,7 @@ export class AppController {
   @UseGuards(LoginGuard)
   @Post('/login')
   login(@Res() res: Response): void {
+    console.log('foi');
     res.redirect('/home');
   }
 
