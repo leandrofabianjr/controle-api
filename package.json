@@ -26,7 +26,6 @@
     "@nestjs/passport": "^7.1.5",
     "@nestjs/platform-express": "^7.6.15",
     "connect-flash": "^0.1.1",
-    "ejs": "^3.1.6",
     "express-handlebars": "^5.3.2",
     "express-session": "^1.17.1",
     "passport": "^0.4.1",
