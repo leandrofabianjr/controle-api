@@ -12,10 +12,13 @@ import { Response } from 'express';
 import { AuthExceptionFilter } from './common/filters/auth-exceptions.filter';
 import { AuthenticatedGuard } from './common/guards/authenticated.guard';
 import { LoginGuard } from './common/guards/login.guard';
+import { UsersService } from './users/users.service';
 
 @UseFilters(AuthExceptionFilter)
 @Controller()
 export class AppController {
+  constructor(private readonly usersService: UsersService) {}
+
   @Get('/')
   @Render('login')
   index() {
@@ -25,7 +28,6 @@ export class AppController {
   @UseGuards(LoginGuard)
   @Post('/login')
   login(@Res() res: Response): void {
-    console.log('foi');
     res.redirect('/home');
   }
 

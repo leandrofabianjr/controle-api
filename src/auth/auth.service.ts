@@ -8,8 +8,8 @@ export class AuthService {
   async validateUser(email, pass): Promise<any> {
     const user = await this.usersService.findOne(email);
     if (user && user.password === pass) {
-      const { password, ...result } = user;
-      return result;
+      delete user.password;
+      return user;
     }
     return null;
   }

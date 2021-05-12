@@ -1,0 +1,82 @@
+<main class="container mt-4">
+  <form id="createUserForm" action="/users/create" method="POST">
+    {{#if message}}
+      <div class="alert alert-danger">
+        {{message}}
+      </div>
+    {{/if}}
+    <div class="mb-3">
+      <label for="firstName" class="form-label">
+        Nome
+      </label>
+      {{#inputWithError 'firstName'}}
+        <input
+          type="text"
+          class="form-control"
+          id="firstName"
+          name="firstName"
+          placeholder="Seu nome"
+        />
+      {{/inputWithError}}
+    </div>
+    <div class="mb-3">
+      <label for="lastName" class="form-label">
+        Sobrenome
+      </label>
+      {{#inputWithError 'lastName'}}
+        <input
+          type="text"
+          class="form-control"
+          id="lastName"
+          name="lastName"
+          placeholder="Seu sobrenome"
+        />
+      {{/inputWithError}}
+    </div>
+    <div class="mb-3">
+      <label for="email" class="form-label">
+        Email
+      </label>
+      {{#inputWithError 'email'}}
+        <input
+          type="email"
+          class="form-control"
+          id="email"
+          name="email"
+          placeholder="Seu e-mail (nome@exemplo.com)"
+        />
+      {{/inputWithError}}
+    </div>
+    <div class="mb-3">
+      <label for="password" class="form-label">
+        Informe uma senha
+      </label>
+      {{#inputWithError 'password'}}
+        <input
+          type="password"
+          class="form-control"
+          id="password"
+          name="password"
+          placeholder="Sua senha"
+        />
+      {{/inputWithError}}
+    </div>
+    <div class="mb-3">
+      <label for="passwordConfirm" class="form-label">
+        Informe a senha novamente
+      </label>
+      {{#inputWithError 'passwordConfirm'}}
+        <input
+          type="password"
+          class="form-control"
+          id="passwordConfirm"
+          name="passwordConfirm"
+          placeholder="Confirme sua senha"
+        />
+      {{/inputWithError}}
+    </div>
+    <button type="submit" class="btn btn-primary">
+      Salvar
+    </button>
+  </form>
+</main>
