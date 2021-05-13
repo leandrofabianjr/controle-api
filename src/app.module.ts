@@ -6,11 +6,10 @@ import { AppService } from './app.service';
 import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
 import { UsersController } from './users/users.controller';
-import { HashService } from './common/hash/hash.service';
 
 @Module({
   imports: [AuthModule, UsersModule, TypeOrmModule.forRoot()],
   controllers: [AppController, UsersController],
-  providers: [AppService, HashService],
+  providers: [AppService],
 })
 export class AppModule {}

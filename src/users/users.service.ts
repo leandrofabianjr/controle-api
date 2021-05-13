@@ -11,7 +11,7 @@ export class UsersService {
     private usersRepository: Repository<User>,
   ) {}
 
-  create(dto: UserCreateDto): Promise<User> {
+  async create(dto: UserCreateDto): Promise<User> {
     const entity = this.usersRepository.create(dto);
     return this.usersRepository.save<User>(entity);
   }
@@ -22,6 +22,10 @@ export class UsersService {
 
   findOne(id: string): Promise<User> {
     return this.usersRepository.findOne(id);
+  }
+
+  findOneByEmail(email: string): Promise<User> {
+    return this.usersRepository.findOne({ email });
   }
 
   async remove(id: string): Promise<void> {

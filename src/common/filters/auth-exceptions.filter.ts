@@ -19,10 +19,8 @@ export class AuthExceptionFilter implements ExceptionFilter {
       exception instanceof UnauthorizedException ||
       exception instanceof ForbiddenException
     ) {
-      request.flash('loginError', 'Please try again!');
-      response.redirect('/');
-    } else {
-      response.redirect('/error');
+      request.flash('error-message', 'Você precisa estar logado!');
+      response.redirect('/login');
     }
   }
 }
