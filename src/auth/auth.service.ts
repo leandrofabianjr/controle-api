@@ -4,14 +4,11 @@ import * as bcrypt from 'bcrypt';
 import { UserCreateDto } from 'src/common/dto/user-create.dto';
 import { validate } from 'class-validator';
 import { User } from 'src/common/entities/user.entity';
+import { ServiceException } from 'src/common/exceptions/service.exception';
 
 const SALT_ROUNDS = 10;
 
-export class AuthServiceException extends Error {
-  constructor(public context: any = {}, public message: string = null) {
-    super(message);
-  }
-}
+export class AuthServiceException extends ServiceException {}
 
 @Injectable()
 export class AuthService {

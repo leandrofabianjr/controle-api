@@ -9,8 +9,7 @@ export class AuthController {
   @Post('signup')
   async createUserPost(@Body() body, @Res() res: Response): Promise<any> {
     try {
-      const user = await this.authService.signUp(body);
-      // TODO: fazer login aqui
+      await this.authService.signUp(body);
       return res.redirect('/');
     } catch (ex) {
       let context = {
@@ -18,7 +17,7 @@ export class AuthController {
       };
 
       if (ex instanceof AuthServiceException) {
-        context = ex.context;
+        context = ex.getContext();
       }
 
       console.error(ex);

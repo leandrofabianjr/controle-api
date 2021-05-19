@@ -1,22 +1,22 @@
 import { IsEmail, IsNotEmpty, MinLength } from 'class-validator';
-import M from 'src/common/validation-messages';
+import ValidationMessages from 'src/common/validation-messages';
 import { Match } from '../match.decorator';
 
 export class UserCreateDto {
-  @IsNotEmpty({ message: M.isNotEmpty('Nome') })
+  @IsNotEmpty({ message: ValidationMessages.isNotEmpty('Nome') })
   firstName: string;
 
-  @IsNotEmpty({ message: M.isNotEmpty('Sobrenome') })
+  @IsNotEmpty({ message: ValidationMessages.isNotEmpty('Sobrenome') })
   lastName: string;
 
-  @IsNotEmpty({ message: M.isNotEmpty('E-mail') })
-  @IsEmail({}, { message: M.isEmail('E-mail') })
+  @IsNotEmpty({ message: ValidationMessages.isNotEmpty('E-mail') })
+  @IsEmail({}, { message: ValidationMessages.isEmail('E-mail') })
   email: string;
 
-  @MinLength(6, { message: M.minLength(6, 'Senha') })
+  @MinLength(6, { message: ValidationMessages.minLength(6, 'Senha') })
   password: string;
 
-  @Match('password', { message: M.passwordConfirmation() })
+  @Match('password', { message: ValidationMessages.passwordConfirmation() })
   passwordConfirm: string;
 
   constructor(obj: UserCreateDto) {
