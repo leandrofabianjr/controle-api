@@ -69,7 +69,6 @@ export class ProductsController {
   }
 
   @Put(':id')
-  @Render('products/edit.hbs')
   async update(
     @Param('id') id: string,
     @Body() body: ProductCreateDto,
@@ -93,7 +92,7 @@ export class ProductsController {
         );
         context = { message };
       }
+      return res.render('products/edit.hbs', context);
     }
-    return res.render('products/edit.hbs', context);
   }
 }
