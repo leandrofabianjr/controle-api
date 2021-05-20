@@ -1,4 +1,5 @@
 import { ValidationError } from 'class-validator';
+import ReturnMessage from '../utils/return-message';
 
 interface ServiceExceptionContext {
   message?: string | ReturnMessage;
