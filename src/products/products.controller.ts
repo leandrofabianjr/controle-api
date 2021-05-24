@@ -33,7 +33,7 @@ export class ProductsController {
     if (!product) {
       throw new NotFoundException('Produto não encontrado');
     }
-    return { product };
+    return { id: product.id, dto: ProductCreateDto.fromModel(product) };
   }
 
   @Get('create')

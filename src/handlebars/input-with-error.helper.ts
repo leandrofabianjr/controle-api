@@ -11,7 +11,6 @@ const inputWithError = function (inputName: string, options) {
 
   const $input: HTMLInputElement = $html.querySelector(`[name=${inputName}]`);
 
-  console.log($input.value);
   if (error) {
     $input.classList.add('is-invalid');
     const $feedback = document.createElement('div');

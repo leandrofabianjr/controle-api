@@ -4,7 +4,6 @@ class InputMask {
   };
 
   static _phone(v) {
-    console.log('_phone');
     var r = v.replace(/\D/g, '');
     r = r.replace(/^0/, '');
     if (r.length > 10) {
