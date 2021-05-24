@@ -1,0 +1,34 @@
+<main>
+  <div class="container">
+    <h1>Clientes</h1>
+    <div class="d-flex justify-content-end">
+      <a class="btn btn-primary" href="/customers/create">Novo</a>
+    </div>
+    {{#if customers.length}}
+    <table class="table">
+      <thead>
+        <tr>
+          <th scope="col">Nome</th>
+          <th scope="col">Telefone</th>
+          <th scope="col">Endereço</th>
+          <th scope="col">Ações</th>
+        </tr>
+      </thead>
+      <tbody>
+        {{#each customers }}
+        <tr>
+          <td>{{ this.name }}</td>
+          <td>{{ this.phone }}</td>
+          <td>{{ this.address }}</td>
+          <td>
+            <a href="/customers/{{ this.id }}/edit">Editar</a>
+          </td>
+        </tr>
+        {{/each }}
+      </tbody>
+    </table>
+    {{ else }}
+    <p>Não há clientes cadastrados</p>
+    {{/if}}
+  </div>
+</main>

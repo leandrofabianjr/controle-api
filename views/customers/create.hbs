@@ -1,0 +1,38 @@
+<main>
+  <div class="container">
+    <h1>Novo Cliente</h1>
+    <div class="mb-5"></div>
+    {{#if message}}
+    <div class="alert alert-{{ message.type }}">{{ message.message }}</div>
+    {{/if}}
+    <form action="/customers" method="POST">
+      <div class="mb-3">
+        <label for="customer-name" class="form-label">Nome</label>
+        {{#inputWithError 'name'}}
+        <input type="text" class="form-control" name="name" id="customer-name" placeholder="Nome do cliente">
+        {{/inputWithError}}
+      </div>
+      <div class="mb-3">
+        <label for="customer-phone" class="form-label">Telefone</label>
+        {{#inputWithError 'phone'}}
+        <input type="tel" class="form-control" name="phone" id="customer-phone" placeholder="Telefone do cliente">
+        {{/inputWithError}}
+      </div>
+      <div class="mb-3">
+        <label for="customer-address" class="form-label">Endereço</label>
+        {{#inputWithError 'address'}}
+        <input type="text" class="form-control" name="address" id="customer-address" placeholder="Endereço do cliente">
+        {{/inputWithError}}
+      </div>
+      <div class="d-flex justify-content-between mt-4">
+        <a class="btn btn-light" href="/customers">Voltar</a>
+        <input class="btn btn-primary" type="submit" value="Salvar">
+      </div>
+    </form>
+  </div>
+</main>
+<script src="/js/input-mask.js"></script>
+<script>
+  const $input = document.getElementById('customer-phone');
+  new InputMask($input, InputMask.Type.Phone)
+</script>

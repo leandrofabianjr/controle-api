@@ -1,19 +1,25 @@
 import {
-  Column,
-  CreateDateColumn,
-  DeleteDateColumn,
   Entity,
+  Column,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
+  CreateDateColumn,
+  DeleteDateColumn,
 } from 'typeorm';
 
 @Entity()
-export class Product {
+export class Customer {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
   @Column()
   name: string;
+
+  @Column()
+  address: string;
+
+  @Column()
+  phone: string;
 
   @CreateDateColumn()
   createdAt!: Date;

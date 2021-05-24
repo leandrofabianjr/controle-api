@@ -8,9 +8,10 @@ import { UsersModule } from './users/users.module';
 import { UsersController } from './users/users.controller';
 import { ProductsModule } from './products/products.module';
 import { MethodOverrideMiddleware } from './common/method-override.middleware';
+import { CustomersModule } from './customers/customers.module';
 
 @Module({
-  imports: [AuthModule, UsersModule, TypeOrmModule.forRoot(), ProductsModule],
+  imports: [AuthModule, UsersModule, TypeOrmModule.forRoot(), ProductsModule, CustomersModule],
   controllers: [AppController, UsersController],
   providers: [AppService],
 })
