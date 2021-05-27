@@ -3,22 +3,27 @@ import {
   CreateDateColumn,
   DeleteDateColumn,
   Entity,
+  ManyToOne,
   OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
+import { Customer } from './customer.entity';
 import { OrderItem } from './order-product.entity';
 
 @Entity()
-export class Product {
+export class Order {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @Column()
-  name: string;
+  @ManyToOne(() => Customer, (c) => c.orders)
+  customer: Customer;
 
-  @OneToMany(() => OrderItem, (oi) => oi.product)
-  orderItems: OrderItem[];
+  @OneToMany(() => OrderItem, (oi) => oi.order)
+  items: OrderItem[];
+
+  @Column()
+  dateToBeDone: Date;
 
   @CreateDateColumn()
   createdAt!: Date;

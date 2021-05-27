@@ -16,7 +16,7 @@ export class ProductsService {
     private repository: Repository<Product>,
   ) {}
 
-  filter(params?: { name?: string }): Promise<Product[]> {
+  filter(params?: { name?: string; where?: any }): Promise<Product[]> {
     return this.repository.find(params);
   }
 

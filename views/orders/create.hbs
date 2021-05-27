@@ -1,0 +1,74 @@
+<main>
+  <div class="container">
+    <h1>Nova Encomenda</h1>
+    <div class="mb-5"></div>
+    {{#if message}}
+    <div class="alert alert-{{ message.type }}">{{ message.message }}</div>
+    {{/if}}
+    <form id="order-form" action="/orders" method="POST">
+      <div class="mb-3">
+        <label for="order-customer" class="form-label">Cliente</label>
+        {{#selectWithError 'customer'}}
+        <select class="form-select" id="order-customer" name="customer">
+          <option selected disabled value>Selecione um cliente</option>
+          {{#each customers}}
+          <option value="{{ this.id }}" {{#ifCond this.id '==' ../dto.customer}}selected{{/ifCond}}>
+            {{ this.name }}
+          </option>
+          {{/each}}
+        </select>
+        {{/selectWithError}}
+      </div>
+      <div class="mb-3">
+        <label for="order-date" class="form-label">Data da retirada</label>
+        {{#inputWithError 'dateToBeDone'}}
+        <input class="form-control" type="date" id="order-date" name="dateToBeDone" />
+        {{/inputWithError}}
+      </div>
+
+      {{#each dto.products}}
+      <input type="hidden" name="products" value="{{ this }}" />
+      <input type="hidden" name="productsQuantities" value="{{ arrayElement ../dto.productsQuantities @index }}"
+        data-id="{{ this }}" />
+      {{/each}}
+
+    </form>
+    <div class="card {{#ifError 'products'}}border-danger is-invalid{{/ifError}}">
+      <div class="card-body">
+        <h5 class="card-title">Produtos da Encomenda</h5>
+
+        <form id="order-add-product-form">
+          <div class="row">
+            <div class="mb-3 col-md-8">
+              <label for="order-new-product" class="form-label">Produto</label>
+              <select class="form-select" id="order-new-product" required>
+                <option selected disabled value>Selecione um produto</option>
+                {{#each products}}
+                <option value="{{ this.id }}">{{ this.name }}</option>
+                {{/each}}
+              </select>
+            </div>
+            <div class="mb-3 col-md-4">
+              <label for="order-new-product-quantity" class="form-label">Quantidade</label>
+              <div class="d-flex">
+                <input type="number" id="order-new-product-quantity" disabled="disabled"
+                  class="form-control flex-grow-1 me-4" step="0.1" required />
+                <button class="btn btn-primary" type="submit">Adicionar</button>
+              </div>
+            </div>
+          </div>
+        </form>
+
+        <ul id="order-product-list" class="list-group"></ul>
+      </div>
+    </div>
+    {{#invalidFeedback 'products'}}{{/invalidFeedback}}
+
+    <div class="d-flex justify-content-between mt-3">
+      <a class="btn btn-light" href="/orders">Voltar</a>
+      <input class="btn btn-primary" type="submit" form="order-form" value="Salvar">
+    </div>
+  </div>
+</main>
+
+<script src="/js/orders.js"></script>

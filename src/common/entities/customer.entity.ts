@@ -5,7 +5,9 @@ import {
   UpdateDateColumn,
   CreateDateColumn,
   DeleteDateColumn,
+  OneToMany,
 } from 'typeorm';
+import { Order } from './order.entity';
 
 @Entity()
 export class Customer {
@@ -20,6 +22,9 @@ export class Customer {
 
   @Column()
   phone: string;
+
+  @OneToMany(() => Order, (o) => o.customer)
+  orders: Order[];
 
   @CreateDateColumn()
   createdAt!: Date;
