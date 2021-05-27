@@ -26,11 +26,6 @@
         {{/inputWithError}}
       </div>
 
-      {{#each dto.products}}
-      <input type="hidden" name="products" value="{{ this }}" />
-      <input type="hidden" name="productsQuantities" value="{{ arrayElement ../dto.productsQuantities @index }}"
-        data-id="{{ this }}" />
-      {{/each}}
 
     </form>
     <div class="card {{#ifError 'products'}}border-danger is-invalid{{/ifError}}">
@@ -70,5 +65,9 @@
     </div>
   </div>
 </main>
+
+<script id="initialProducts" type="application/json">
+{{ itemsJson }}
+</script>
 
 <script src="/js/orders.js"></script>

@@ -1,8 +1,9 @@
 import { Body, Controller, Get, Post, Render, Req, Res } from '@nestjs/common';
-import { Response } from 'express';
+import { json, Response } from 'express';
 import ReturnMessage from 'src/common/utils/return-message';
 import { CustomersService } from 'src/customers/customers.service';
 import { ProductsService } from 'src/products/products.service';
+import { In } from 'typeorm';
 import { OrderCreateDto } from './dtos/order-create.dto';
 import { OrderServiceException, OrdersService } from './orders.service';
 
@@ -22,7 +23,24 @@ export class OrdersController {
 
     const context = req.flash('context')[0] || {};
 
-    return { customers, products, ...context };
+    const productsIds = context?.dto?.products;
+    let itemsJson;
+    if (Array.isArray(productsIds)) {
+      const result = await this.productsService.filter({
+        where: { id: In(productsIds) },
+      });
+      const quantities = context?.dto?.productsQuantities;
+      itemsJson = result.map((p) => {
+        const index = productsIds.findIndex((pId) => pId == p.id);
+        return { id: p.id, name: p.name, quantity: quantities[index] };
+      });
+    }
+    return {
+      customers,
+      products,
+      itemsJson: JSON.stringify(itemsJson),
+      ...context,
+    };
   }
 
   @Post('')
