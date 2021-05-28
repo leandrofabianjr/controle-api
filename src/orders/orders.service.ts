@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { validate } from 'class-validator';
-import { OrderItem } from 'src/common/entities/order-product.entity';
+import { OrderItem } from 'src/common/entities/order-item.entity';
 import { Order } from 'src/common/entities/order.entity';
 import { ServiceException } from 'src/common/exceptions/service.exception';
 import ReturnMessage from 'src/common/utils/return-message';
@@ -17,9 +17,32 @@ export class OrdersService {
   constructor(
     @InjectRepository(Order)
     private repository: Repository<Order>,
+    @InjectRepository(OrderItem)
+    private orderItemRepository: Repository<OrderItem>,
     private customersService: CustomersService,
     private productsService: ProductsService,
   ) {}
+
+  filter(params?: any): Promise<Order[]> {
+    return this.repository.find(params);
+  }
+
+  get(id: string): Promise<Order> {
+    return this.repository.findOne(id);
+  }
+
+  async _saveOrder(dto: OrderCreateDto, entity: Order) {
+    try {
+      const order = await this.repository.save(entity);
+      entity.items.forEach((i) => (i.order = order));
+      entity.items = await this.orderItemRepository.save(entity.items);
+      return order;
+    } catch (ex) {
+      console.error(ex);
+      const message = ReturnMessage.Danger('Problema ao salvar a encomenda');
+      throw new OrderServiceException({ message, dto });
+    }
+  }
 
   async create(data: OrderCreateDto): Promise<Order> {
     const dto = new OrderCreateDto(data);
@@ -33,8 +56,23 @@ export class OrdersService {
     }
 
     const entity = await this.dtoToEntity(dto);
+    return this._saveOrder(dto, entity);
+  }
 
-    return this.repository.save(entity);
+  async edit(id: string, data: OrderCreateDto) {
+    const dto = new OrderCreateDto(data);
+    const errors = await validate(dto);
+
+    if (errors.length) {
+      const message = ReturnMessage.Danger(
+        'Por favor, confira os dados preenchidos',
+      );
+      throw new OrderServiceException({ message, dto, errors });
+    }
+
+    const order = await this.dtoToEntity(dto);
+    order.id = id;
+    return this._saveOrder(dto, order);
   }
 
   async dtoToEntity(dto: OrderCreateDto): Promise<Order> {
@@ -62,6 +100,8 @@ export class OrdersService {
       throw new OrderServiceException({ message, dto });
     }
 
+    order.dateToBeDone = new Date(dto.dateToBeDone);
+
     order.items = products.map((p, index) => {
       const orderitem = new OrderItem();
       orderitem.product = p;
@@ -69,7 +109,25 @@ export class OrdersService {
       return orderitem;
     });
 
-    order.dateToBeDone = dto.dateToBeDone;
     return order;
+  }
+
+  async getItemsJson(
+    productsIds: string[],
+    quantities: number[],
+  ): Promise<any> {
+    let itemsJson: { id: string; name: string; quantity: number }[];
+
+    if (Array.isArray(productsIds)) {
+      const result = await this.productsService.filter({
+        where: { id: In(productsIds) },
+      });
+      itemsJson = result.map((p) => {
+        const index = productsIds.findIndex((pId) => pId == p.id);
+        return { id: p.id, name: p.name, quantity: quantities[index] };
+      });
+    }
+
+    return itemsJson;
   }
 }

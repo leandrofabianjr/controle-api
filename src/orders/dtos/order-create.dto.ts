@@ -14,12 +14,12 @@ export class OrderCreateDto {
   productsQuantities: number[];
 
   @IsNotEmpty({ message: ValidationMessages.isNotEmpty() })
-  dateToBeDone: Date;
+  dateToBeDone: string;
 
   constructor(data: OrderCreateDto) {
     this.customer = data.customer;
     this.products = data.products;
-    this.productsQuantities = data.productsQuantities.map((q) => +q);
+    this.productsQuantities = data.productsQuantities;
     this.dateToBeDone = data.dateToBeDone;
   }
 
@@ -28,7 +28,7 @@ export class OrderCreateDto {
       customer: model.customer?.id,
       products: model.items?.map((i) => i.product?.id),
       productsQuantities: model.items?.map((i) => +i.quantity),
-      dateToBeDone: model.dateToBeDone,
+      dateToBeDone: model.dateToBeDone?.toISOString().substring(0, 10),
     } as OrderCreateDto);
   }
 }

@@ -1,30 +1,33 @@
 <main>
   <div class="container">
-    <h1>Produtos</h1>
+    <h1>Encomendas</h1>
     <div class="d-flex justify-content-end">
-      <a class="btn btn-primary" href="/products/create">Novo</a>
+      <a class="btn btn-primary" href="/orders/create">
+        <i class="bi bi-plus-lg mr-2"></i>
+        Criar
+      </a>
     </div>
-    {{#if products.length}}
+    {{#if orders.length}}
     <table class="table">
       <thead>
         <tr>
-          <th scope="col">Nome</th>
+          <th scope="col">Cliente</th>
           <th scope="col">Ações</th>
         </tr>
       </thead>
       <tbody>
-        {{#each products }}
+        {{#each orders }}
         <tr>
-          <td>{{ this.name }}</td>
+          <td>{{ this.customer.name }}</td>
           <td>
-            <a href="/products/{{ this.id }}/edit">Editar</a>
+            <a href="/orders/{{ this.id }}/edit">Editar</a>
           </td>
         </tr>
         {{/each }}
       </tbody>
     </table>
     {{ else }}
-    <p>Não há produtos cadastrados</p>
+    <p>Não há encomendas cadastradas</p>
     {{/if}}
   </div>
 </main>

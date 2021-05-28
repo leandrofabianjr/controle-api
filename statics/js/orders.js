@@ -91,9 +91,9 @@ function orderAddProductFormSubmit(ev) {
 
 function buildInitialProductsListItems() {
   var jsonElement = document.getElementById('initialProducts');
-  var products = JSON.parse(jsonElement.textContent);
+  var products = JSON.parse(jsonElement.value);
   console.log(products);
-  products.forEach((p) => addProductToOrder(...p));
+  products.forEach((p) => addProductToOrder(p?.id, p?.name, p?.quantity));
 }
 
 $newProductSelect.addEventListener('change', newProductSelectChange);

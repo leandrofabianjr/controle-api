@@ -4,7 +4,6 @@ import {
   DeleteDateColumn,
   Entity,
   ManyToOne,
-  PrimaryColumn,
   UpdateDateColumn,
 } from 'typeorm';
 import { Order } from './order.entity';
@@ -12,12 +11,10 @@ import { Product } from './product.entity';
 
 @Entity()
 export class OrderItem {
-  @ManyToOne(() => Order, (o) => o.items)
-  @PrimaryColumn('uuid')
+  @ManyToOne(() => Order, (o) => o.items, { primary: true })
   order: Order;
 
-  @ManyToOne(() => Product, (p) => p.orderItems)
-  @PrimaryColumn('uuid')
+  @ManyToOne(() => Product, (p) => p.orderItems, { primary: true, eager: true })
   product: Product;
 
   @Column()
