@@ -19,7 +19,13 @@ export class Order {
   @ManyToOne(() => Customer, (c) => c.orders, { eager: true })
   customer: Customer;
 
-  @OneToMany(() => OrderItem, (oi) => oi.order, { eager: true })
+  @OneToMany(() => OrderItem, (oi) => oi.order, {
+    eager: true,
+    onUpdate: 'CASCADE',
+    onDelete: 'CASCADE',
+    cascade: ['insert', 'update', 'soft-remove'],
+    orphanedRowAction: 'delete',
+  })
   items: OrderItem[];
 
   @Column()

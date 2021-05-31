@@ -11,7 +11,13 @@ import { Product } from './product.entity';
 
 @Entity()
 export class OrderItem {
-  @ManyToOne(() => Order, (o) => o.items, { primary: true })
+  @ManyToOne(() => Order, (o) => o.items, {
+    primary: true,
+    onUpdate: 'CASCADE',
+    onDelete: 'CASCADE',
+    cascade: ['insert', 'update', 'soft-remove'],
+    orphanedRowAction: 'delete',
+  })
   order: Order;
 
   @ManyToOne(() => Product, (p) => p.orderItems, { primary: true, eager: true })

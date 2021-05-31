@@ -72,6 +72,9 @@ export class OrdersService {
 
     const order = await this.dtoToEntity(dto);
     order.id = id;
+
+    order.items.forEach((i) => (i.order = order));
+
     return this._saveOrder(dto, order);
   }
 
