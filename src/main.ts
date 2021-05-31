@@ -13,6 +13,7 @@ import invalidFeedback from './handlebars/invalid-feedback.helper';
 import ifCond from './handlebars/if-cond.helper';
 import ifError from './handlebars/if-error.helper';
 import { arrayElement } from './handlebars/array-element.helper';
+import { date } from './handlebars/date.helper';
 import json from './handlebars/json.helper';
 
 async function bootstrap() {
@@ -36,6 +37,7 @@ async function bootstrap() {
         ifCond,
         ifError,
         arrayElement,
+        date,
       },
     }),
   );
