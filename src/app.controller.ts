@@ -16,7 +16,7 @@ import { LoginGuard } from './common/guards/login.guard';
 @UseFilters(AuthExceptionFilter)
 @Controller()
 export class AppController {
-  @Get('/')
+  @Get('')
   index(@Res() res: Response) {
     return res.redirect('/dashboard');
   }
