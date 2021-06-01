@@ -9,8 +9,12 @@ import {
   Render,
   Req,
   Res,
+  UseFilters,
+  UseGuards,
 } from '@nestjs/common';
 import { Response } from 'express';
+import { AuthExceptionFilter } from 'src/common/filters/auth-exceptions.filter';
+import { AuthenticatedGuard } from 'src/common/guards/authenticated.guard';
 import ReturnMessage from 'src/common/utils/return-message';
 import { CustomersService } from 'src/customers/customers.service';
 import { ProductsService } from 'src/products/products.service';
@@ -18,6 +22,8 @@ import { OrderCreateDto } from './dtos/order-create.dto';
 import { OrderServiceException, OrdersService } from './orders.service';
 
 @Controller('orders')
+@UseFilters(AuthExceptionFilter)
+@UseGuards(AuthenticatedGuard)
 export class OrdersController {
   constructor(
     private ordersService: OrdersService,

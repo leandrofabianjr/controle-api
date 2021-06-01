@@ -8,13 +8,19 @@ import {
   Put,
   Render,
   Res,
+  UseFilters,
+  UseGuards,
 } from '@nestjs/common';
 import { ProductCreateDto } from './dto/product-create.dto';
 import { ProductServiceException, ProductsService } from './products.service';
 import ReturnMessage from '../common/utils/return-message';
 import { Response } from 'express';
+import { AuthenticatedGuard } from 'src/common/guards/authenticated.guard';
+import { AuthExceptionFilter } from 'src/common/filters/auth-exceptions.filter';
 
 @Controller('products')
+@UseGuards(AuthenticatedGuard)
+@UseFilters(AuthExceptionFilter)
 export class ProductsController {
   constructor(private productsService: ProductsService) {}
 

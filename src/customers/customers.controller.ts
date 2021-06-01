@@ -8,8 +8,12 @@ import {
   Put,
   Render,
   Res,
+  UseFilters,
+  UseGuards,
 } from '@nestjs/common';
 import { Response } from 'express';
+import { AuthExceptionFilter } from 'src/common/filters/auth-exceptions.filter';
+import { AuthenticatedGuard } from 'src/common/guards/authenticated.guard';
 import ReturnMessage from 'src/common/utils/return-message';
 import {
   CustomerServiceException,
@@ -18,6 +22,8 @@ import {
 import { CustomerCreateDto } from './dtos/customer.dto';
 
 @Controller('customers')
+@UseFilters(AuthExceptionFilter)
+@UseGuards(AuthenticatedGuard)
 export class CustomersController {
   constructor(private customersService: CustomersService) {}
 
