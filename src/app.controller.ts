@@ -3,7 +3,7 @@ import {
   Get,
   Post,
   Render,
-  Request,
+  Req,
   Res,
   UseFilters,
   UseGuards,
@@ -23,20 +23,21 @@ export class AppController {
 
   @Get('signup')
   @Render('signup.hbs')
-  createUser(): void {
-    return;
+  createUser(@Req() req): void {
+    const context = req.flash('context')[0] || {};
+    return { ...context };
   }
 
   @Get('/login')
-  loginGet(@Request() req, @Res() res: Response): void {
+  loginGet(@Req() req, @Res() res: Response): void {
     const message = req.flash('error-message');
-    res.render('login', { message });
+    return res.render('login', { message });
   }
 
   @UseGuards(LoginGuard)
   @Post('/login')
   login(@Res() res: Response) {
-    res.redirect('/');
+    return res.redirect('/');
   }
 
   @UseGuards(AuthenticatedGuard)
@@ -47,8 +48,8 @@ export class AppController {
   }
 
   @Get('/logout')
-  logout(@Request() req, @Res() res: Response): void {
+  logout(@Req() req, @Res() res: Response): void {
     req.logout();
-    res.redirect('/');
+    return res.redirect('/');
   }
 }

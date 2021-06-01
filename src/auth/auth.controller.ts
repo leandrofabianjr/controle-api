@@ -1,4 +1,4 @@
-import { Body, Controller, Post, Res } from '@nestjs/common';
+import { Body, Controller, Post, Req, Res } from '@nestjs/common';
 import { Response } from 'express';
 import { AuthService, AuthServiceException } from './auth.service';
 
@@ -7,7 +7,11 @@ export class AuthController {
   constructor(private authService: AuthService) {}
 
   @Post('signup')
-  async createUserPost(@Body() body, @Res() res: Response): Promise<any> {
+  async createUserPost(
+    @Body() body,
+    @Res() res: Response,
+    @Req() req,
+  ): Promise<any> {
     try {
       await this.authService.signUp(body);
       return res.redirect('/');
@@ -22,7 +26,8 @@ export class AuthController {
 
       console.error(ex);
 
-      return res.render('signup.hbs', context);
+      req.flash('context', context);
+      return res.redirect('/signup');
     }
   }
 }
