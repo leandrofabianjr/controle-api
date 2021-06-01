@@ -1,7 +1,7 @@
 import { ValidationError } from 'class-validator';
 import { JSDOM } from 'jsdom';
 
-const invalidFeedback = function (inputName: string, options) {
+export const invalidFeedback = function (inputName: string, options) {
   const errors: ValidationError[] = options?.data?.root?.errors ?? [];
   const error = errors.find((e) => e.property == inputName);
 
@@ -18,5 +18,3 @@ const invalidFeedback = function (inputName: string, options) {
 
   return $html.innerHTML;
 };
-
-export default invalidFeedback;

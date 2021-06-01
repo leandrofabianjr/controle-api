@@ -2,7 +2,6 @@ import { MiddlewareConsumer, Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
 import { AppController } from './app.controller';
-import { AppService } from './app.service';
 import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
 import { UsersController } from './users/users.controller';
@@ -12,9 +11,15 @@ import { CustomersModule } from './customers/customers.module';
 import { OrdersModule } from './orders/orders.module';
 
 @Module({
-  imports: [AuthModule, UsersModule, TypeOrmModule.forRoot(), ProductsModule, CustomersModule, OrdersModule],
+  imports: [
+    AuthModule,
+    UsersModule,
+    TypeOrmModule.forRoot(),
+    ProductsModule,
+    CustomersModule,
+    OrdersModule,
+  ],
   controllers: [AppController, UsersController],
-  providers: [AppService],
 })
 export class AppModule {
   configure(consumer: MiddlewareConsumer) {

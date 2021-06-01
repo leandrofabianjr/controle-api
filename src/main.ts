@@ -6,15 +6,7 @@ import * as exphbs from 'express-handlebars';
 import * as passport from 'passport';
 import session = require('express-session');
 import flash = require('connect-flash');
-import inputWithError from './handlebars/input-with-error.helper';
-import selectWithError from './handlebars/select-with-error.helper';
-import isInvalidClass from './handlebars/is-invalid-class.helper';
-import invalidFeedback from './handlebars/invalid-feedback.helper';
-import ifCond from './handlebars/if-cond.helper';
-import ifError from './handlebars/if-error.helper';
-import { arrayElement } from './handlebars/array-element.helper';
-import { date } from './handlebars/date.helper';
-import json from './handlebars/json.helper';
+import * as handlebarsHelpers from './handlebars-helpers';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
@@ -28,17 +20,7 @@ async function bootstrap() {
     exphbs({
       extname: '.hbs',
       defaultLayout: 'main',
-      helpers: {
-        json,
-        inputWithError,
-        selectWithError,
-        isInvalidClass,
-        invalidFeedback,
-        ifCond,
-        ifError,
-        arrayElement,
-        date,
-      },
+      helpers: handlebarsHelpers,
     }),
   );
 

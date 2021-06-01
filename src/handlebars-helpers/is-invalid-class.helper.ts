@@ -1,10 +1,9 @@
 import { ValidationError } from 'class-validator';
+const _CLASS_NAME = 'is-invalid';
 
-const ifError = function (inputName: string, options) {
+export const isInvalidClass = function (inputName: string, options) {
   const errors: ValidationError[] = options?.data?.root?.errors ?? [];
   const error = errors.find((e) => e.property == inputName);
 
-  return error ? options.fn(this) : options.inverse(this);
+  return error ? _CLASS_NAME : '';
 };
-
-export default ifError;
