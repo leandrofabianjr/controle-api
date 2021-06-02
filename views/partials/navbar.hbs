@@ -6,7 +6,7 @@
       <span class="navbar-toggler-icon"></span>
     </button>
     <div class="collapse navbar-collapse" id="navbarNav">
-      <ul class="navbar-nav">
+      <ul class="navbar-nav w-100">
         <li class="nav-item">
           {{!-- <span class="nav-link active">Dashboard</a> --}}
             <a class="nav-link" href="/dashboard">Dashboard</a>
@@ -19,6 +19,19 @@
         </li>
         <li class="nav-item">
           <a class="nav-link" href="/customers">Clientes</a>
+        </li>
+        <li class="nav-item dropdown ms-auto">
+          <a class="nav-link dropdown-toggle text-end" href="#" id="navbarUserDropdown" role="button"
+            data-bs-toggle="dropdown" aria-expanded="false">
+            <i class="bi bi-person-circle"></i>
+          </a>
+          <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarUserDropdown">
+            {{#if user}}
+            <li><a class="dropdown-item" href="/logout">Sair</a></li>
+            {{else}}
+            <li><a class="dropdown-item" href="/signup">Novo usuário</a></li>
+            {{/if}}
+          </ul>
         </li>
       </ul>
     </div>
