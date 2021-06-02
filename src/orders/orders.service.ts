@@ -1,10 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { validate } from 'class-validator';
-import { OrderItem } from 'src/common/entities/order-item.entity';
-import { Order } from 'src/common/entities/order.entity';
-import { ServiceException } from 'src/common/exceptions/service.exception';
-import ReturnMessage from 'src/common/utils/return-message';
+import { OrderItem } from 'src/commons/entities/order-item.entity';
+import { Order } from 'src/commons/entities/order.entity';
+import { ServiceException } from 'src/commons/exceptions/service.exception';
+import ReturnMessage from 'src/commons/utils/return-message';
 import { CustomersService } from 'src/customers/customers.service';
 import { ProductsService } from 'src/products/products.service';
 import { In, Repository } from 'typeorm';
@@ -103,7 +103,9 @@ export class OrdersService {
       throw new OrderServiceException({ message, dto });
     }
 
-    order.dateToBeDone = new Date(dto.dateToBeDone);
+    const dateToBeDone = new Date(dto.dateToBeDone);
+    dateToBeDone.setHours(0, 0, 0);
+    order.dateToBeDone = dateToBeDone;
 
     order.items = products.map((p, index) => {
       const orderitem = new OrderItem();

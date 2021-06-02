@@ -7,14 +7,16 @@ import {
   Post,
   Put,
   Render,
+  Req,
   Res,
   UseFilters,
   UseGuards,
 } from '@nestjs/common';
 import { Response } from 'express';
-import { AuthExceptionFilter } from 'src/common/filters/auth-exceptions.filter';
-import { AuthenticatedGuard } from 'src/common/guards/authenticated.guard';
-import ReturnMessage from 'src/common/utils/return-message';
+import { AuthExceptionFilter } from 'src/commons/filters/auth-exceptions.filter';
+import { AuthenticatedGuard } from 'src/commons/guards/authenticated.guard';
+import ReturnMessage from 'src/commons/utils/return-message';
+import { ResponseService } from 'src/commons/response/response.service';
 import {
   CustomerServiceException,
   CustomersService,
@@ -25,35 +27,41 @@ import { CustomerCreateDto } from './dtos/customer.dto';
 @UseFilters(AuthExceptionFilter)
 @UseGuards(AuthenticatedGuard)
 export class CustomersController {
-  constructor(private customersService: CustomersService) {}
+  constructor(
+    private resService: ResponseService,
+    private customersService: CustomersService,
+  ) {}
 
   @Get('')
-  @Render('customers/index.hbs')
-  async index() {
+  async index(@Res() res) {
     const customers = await this.customersService.filter();
 
-    return { customers };
+    this.resService.render(res, 'customers/index.hbs', { customers });
   }
 
   @Get(':id/edit')
-  @Render('customers/edit.hbs')
-  async edit(@Param('id') id: string) {
+  async edit(@Param('id') id: string, @Res() res) {
     const customer = await this.customersService.get(id);
     if (!customer) {
       throw new NotFoundException('Cliente não encontrado');
     }
-    return { id: customer.id, dto: CustomerCreateDto.fromModel(customer) };
+
+    const dto = CustomerCreateDto.fromModel(customer);
+
+    return this.resService.render(res, 'customers/edit.hbs', { id, dto });
   }
 
   @Get('create')
-  @Render('customers/create.hbs')
-  create() {
-    return {};
+  create(@Res() res) {
+    return this.resService.render(res, 'customers/create.hbs');
   }
 
   @Post('')
-  @Render('customers/create.hbs')
-  async store(@Body() body: CustomerCreateDto) {
+  async store(
+    @Body() body: CustomerCreateDto,
+    @Req() req,
+    @Res() res: Response,
+  ) {
     let context = {};
 
     try {
@@ -74,13 +82,15 @@ export class CustomersController {
       }
     }
 
-    return context;
+    req.flash('context', context);
+    return res.redirect(`/customers/create`);
   }
 
   @Put(':id')
   async update(
     @Param('id') id: string,
     @Body() body: CustomerCreateDto,
+    @Req() req,
     @Res() res: Response,
   ) {
     let context = {};
@@ -101,7 +111,8 @@ export class CustomersController {
         );
         context = { message };
       }
-      return res.render('customers/edit.hbs', context);
+      req.flash('context', context);
+      return res.redirect(`/customers/${id}/edit`);
     }
   }
 }

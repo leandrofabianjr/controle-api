@@ -7,50 +7,46 @@ import {
   Post,
   Put,
   Render,
+  Req,
   Res,
   UseFilters,
   UseGuards,
 } from '@nestjs/common';
 import { ProductCreateDto } from './dto/product-create.dto';
 import { ProductServiceException, ProductsService } from './products.service';
-import ReturnMessage from '../common/utils/return-message';
+import ReturnMessage from '../commons/utils/return-message';
 import { Response } from 'express';
-import { AuthenticatedGuard } from 'src/common/guards/authenticated.guard';
-import { AuthExceptionFilter } from 'src/common/filters/auth-exceptions.filter';
+import { AuthenticatedGuard } from 'src/commons/guards/authenticated.guard';
+import { AuthExceptionFilter } from 'src/commons/filters/auth-exceptions.filter';
+import { ResponseService } from 'src/commons/response/response.service';
 
 @Controller('products')
 @UseGuards(AuthenticatedGuard)
 @UseFilters(AuthExceptionFilter)
 export class ProductsController {
-  constructor(private productsService: ProductsService) {}
+  constructor(
+    private resService: ResponseService,
+    private productsService: ProductsService,
+  ) {}
 
   @Get('')
-  @Render('products/index.hbs')
-  async index() {
+  async index(@Res() res) {
     const products = await this.productsService.filter();
 
-    return { products };
-  }
-
-  @Get(':id/edit')
-  @Render('products/edit.hbs')
-  async edit(@Param('id') id: string) {
-    const product = await this.productsService.get(id);
-    if (!product) {
-      throw new NotFoundException('Produto não encontrado');
-    }
-    return { id: product.id, dto: ProductCreateDto.fromModel(product) };
+    this.resService.render(res, 'products/index.hbs', { products });
   }
 
   @Get('create')
-  @Render('products/create.hbs')
-  create() {
-    return { label: 'Produtos' };
+  create(@Res() res) {
+    return this.resService.render(res, 'products/create.hbs');
   }
 
   @Post('')
-  @Render('products/create.hbs')
-  async store(@Body() body: ProductCreateDto) {
+  async store(
+    @Body() body: ProductCreateDto,
+    @Req() req,
+    @Res() res: Response,
+  ) {
     let context = {};
 
     try {
@@ -71,7 +67,20 @@ export class ProductsController {
       }
     }
 
-    return context;
+    req.flash('context', context);
+    return res.redirect(`/products/create`);
+  }
+
+  @Get(':id/edit')
+  async edit(@Param('id') id: string, @Res() res) {
+    const product = await this.productsService.get(id);
+    if (!product) {
+      throw new NotFoundException('Produto não encontrado');
+    }
+
+    const dto = ProductCreateDto.fromModel(product);
+
+    return this.resService.render(res, 'products/edit.hbs', { id, dto });
   }
 
   @Put(':id')
@@ -79,6 +88,7 @@ export class ProductsController {
     @Param('id') id: string,
     @Body() body: ProductCreateDto,
     @Res() res: Response,
+    @Req() req,
   ) {
     let context = {};
     try {
@@ -98,7 +108,8 @@ export class ProductsController {
         );
         context = { message };
       }
-      return res.render('products/edit.hbs', context);
+      req.flash('context', context);
+      return res.redirect(`/products/${id}/edit`);
     }
   }
 }

@@ -9,15 +9,15 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { Response } from 'express';
-import { AuthExceptionFilter } from './common/filters/auth-exceptions.filter';
-import { AuthenticatedGuard } from './common/guards/authenticated.guard';
-import { LoginGuard } from './common/guards/login.guard';
-import { ViewsService } from './views/views.service';
+import { AuthExceptionFilter } from './commons/filters/auth-exceptions.filter';
+import { AuthenticatedGuard } from './commons/guards/authenticated.guard';
+import { LoginGuard } from './commons/guards/login.guard';
+import { ResponseService } from './commons/response/response.service';
 
 @UseFilters(AuthExceptionFilter)
 @Controller()
 export class AppController {
-  constructor(private views: ViewsService) {}
+  constructor(private resService: ResponseService) {}
 
   @Get('')
   index(@Res() res: Response) {
@@ -25,16 +25,14 @@ export class AppController {
   }
 
   @Get('signup')
-  @Render('signup.hbs')
-  createUser(@Req() req): void {
-    const context = req.flash('context')[0] || {};
-    return { ...context };
+  createUser(@Res() res: Response): void {
+    return this.resService.render(res, 'signup');
   }
 
   @Get('/login')
   loginGet(@Req() req, @Res() res: Response): void {
     const message = req.flash('error-message');
-    return this.views.render(res, 'login', { message });
+    return this.resService.render(res, 'login', { message });
   }
 
   @UseGuards(LoginGuard)
@@ -45,9 +43,8 @@ export class AppController {
 
   @UseGuards(AuthenticatedGuard)
   @Get('/dashboard')
-  @Render('dashboard')
-  dashboard() {
-    return;
+  dashboard(@Res() res: Response) {
+    return this.resService.render(res, 'dashboard', {});
   }
 
   @Get('/logout')

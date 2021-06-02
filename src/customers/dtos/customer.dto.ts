@@ -1,6 +1,6 @@
 import { IsNotEmpty } from 'class-validator';
-import { Customer } from 'src/common/entities/customer.entity';
-import ValidationMessages from 'src/common/validation-messages';
+import { Customer } from 'src/commons/entities/customer.entity';
+import ValidationMessages from 'src/commons/validation-messages';
 
 export class CustomerCreateDto {
   @IsNotEmpty({ message: ValidationMessages.isNotEmpty('Nome') })

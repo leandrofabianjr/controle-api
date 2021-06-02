@@ -13,9 +13,10 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { Response } from 'express';
-import { AuthExceptionFilter } from 'src/common/filters/auth-exceptions.filter';
-import { AuthenticatedGuard } from 'src/common/guards/authenticated.guard';
-import ReturnMessage from 'src/common/utils/return-message';
+import { AuthExceptionFilter } from 'src/commons/filters/auth-exceptions.filter';
+import { AuthenticatedGuard } from 'src/commons/guards/authenticated.guard';
+import { ResponseService } from 'src/commons/response/response.service';
+import ReturnMessage from 'src/commons/utils/return-message';
 import { CustomersService } from 'src/customers/customers.service';
 import { ProductsService } from 'src/products/products.service';
 import { OrderCreateDto } from './dtos/order-create.dto';
@@ -26,22 +27,20 @@ import { OrderServiceException, OrdersService } from './orders.service';
 @UseGuards(AuthenticatedGuard)
 export class OrdersController {
   constructor(
+    private resService: ResponseService,
     private ordersService: OrdersService,
     private customersService: CustomersService,
     private productsService: ProductsService,
   ) {}
 
   @Get('')
-  @Render('orders/index.hbs')
-  async index(@Req() req) {
+  async index(@Res() res) {
     const orders = await this.ordersService.filter();
-    const context = req.flash('context')[0] || {};
-    return { orders, ...context };
+    return this.resService.render(res, 'orders/index.hbs', { orders });
   }
 
   @Get('create')
-  @Render('orders/create.hbs')
-  async create(@Req() req) {
+  async create(@Req() req, @Res() res) {
     const customers = await this.customersService.filter();
     const products = await this.productsService.filter();
 
@@ -52,7 +51,12 @@ export class OrdersController {
       context?.dto?.productsQuantities,
     );
 
-    return { customers, products, itemsJson, ...context };
+    return this.resService.render(res, 'orders/create.hbs', {
+      customers,
+      products,
+      itemsJson,
+      ...context,
+    });
   }
 
   @Post('')
@@ -84,24 +88,30 @@ export class OrdersController {
   }
 
   @Get(':id/edit')
-  @Render('orders/edit.hbs')
-  async edit(@Param('id') id: string, @Req() req) {
+  async edit(@Param('id') id: string, @Req() req, @Res() res: Response) {
     const order = await this.ordersService.get(id);
     if (!order) {
       throw new NotFoundException('Encomenda não encontrada');
     }
+
     const context = req.flash('context')[0] || {};
 
-    const dto = context?.dto ?? OrderCreateDto.fromModel(order);
+    context.dto = context?.dto ?? OrderCreateDto.fromModel(order);
     const customers = await this.customersService.filter();
     const products = await this.productsService.filter();
 
     const itemsJson = await this.ordersService.getItemsJson(
-      dto.products,
-      dto.productsQuantities,
+      context?.dto?.products,
+      context?.dto?.productsQuantities,
     );
 
-    return { id: order.id, dto, customers, products, itemsJson, ...context };
+    return this.resService.render(res, 'orders/edit.hbs', {
+      id,
+      customers,
+      products,
+      itemsJson,
+      ...context,
+    });
   }
 
   @Put(':id')

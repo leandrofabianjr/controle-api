@@ -1,9 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { validate } from 'class-validator';
-import { Product } from 'src/common/entities/product.entity';
-import { ServiceException } from 'src/common/exceptions/service.exception';
-import ReturnMessage from 'src/common/utils/return-message';
+import { Product } from 'src/commons/entities/product.entity';
+import { ServiceException } from 'src/commons/exceptions/service.exception';
+import ReturnMessage from 'src/commons/utils/return-message';
 import { Repository } from 'typeorm';
 import { ProductCreateDto } from './dto/product-create.dto';
 

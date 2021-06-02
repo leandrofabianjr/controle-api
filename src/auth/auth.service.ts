@@ -1,10 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { UsersService } from '../users/users.service';
 import * as bcrypt from 'bcrypt';
-import { UserCreateDto } from 'src/common/dto/user-create.dto';
+import { UserCreateDto } from 'src/commons/dto/user-create.dto';
 import { validate } from 'class-validator';
-import { User } from 'src/common/entities/user.entity';
-import { ServiceException } from 'src/common/exceptions/service.exception';
+import { User } from 'src/commons/entities/user.entity';
+import { ServiceException } from 'src/commons/exceptions/service.exception';
 
 const SALT_ROUNDS = 10;
 

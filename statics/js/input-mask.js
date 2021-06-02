@@ -21,6 +21,7 @@ class InputMask {
   constructor($input, type) {
     $input.addEventListener('keypress', () => this._validate($input, type));
     $input.addEventListener('blur', () => this._validate($input, type));
+    $input.blur();
   }
 
   _validate($input, type) {

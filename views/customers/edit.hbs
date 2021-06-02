@@ -32,3 +32,8 @@
     </form>
   </div>
 </main>
+<script src="/js/input-mask.js"></script>
+<script>
+  const $input = document.getElementById('customer-phone');
+  new InputMask($input, InputMask.Type.Phone)
+</script>

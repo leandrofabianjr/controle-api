@@ -1,7 +1,7 @@
 import { IsNotEmpty } from 'class-validator';
-import { Order } from 'src/common/entities/order.entity';
-import ValidationMessages from 'src/common/validation-messages';
-import { MatchLenght } from 'src/common/match-lenght.decorator';
+import { Order } from 'src/commons/entities/order.entity';
+import ValidationMessages from 'src/commons/validation-messages';
+import { MatchLenght } from 'src/commons/match-lenght.decorator';
 
 export class OrderCreateDto {
   @IsNotEmpty({ message: ValidationMessages.isNotEmpty('Cliente') })
@@ -24,11 +24,12 @@ export class OrderCreateDto {
   }
 
   static fromModel(model: Order): OrderCreateDto {
+    console.log(model.dateToBeDone?.toISOString());
     return new this({
       customer: model.customer?.id,
       products: model.items?.map((i) => i.product?.id),
       productsQuantities: model.items?.map((i) => +i.quantity),
-      dateToBeDone: model.dateToBeDone?.toISOString().substring(0, 10),
+      dateToBeDone: model.dateToBeDone?.toISOString()?.substring(0, 10),
     } as OrderCreateDto);
   }
 }

@@ -1,9 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { validate } from 'class-validator';
-import { Customer } from 'src/common/entities/customer.entity';
-import { ServiceException } from 'src/common/exceptions/service.exception';
-import ReturnMessage from 'src/common/utils/return-message';
+import { Customer } from 'src/commons/entities/customer.entity';
+import { ServiceException } from 'src/commons/exceptions/service.exception';
+import ReturnMessage from 'src/commons/utils/return-message';
 import { Repository } from 'typeorm';
 import { CustomerCreateDto } from './dtos/customer.dto';
 

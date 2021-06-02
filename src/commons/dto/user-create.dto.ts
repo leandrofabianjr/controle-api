@@ -1,5 +1,5 @@
 import { IsEmail, IsNotEmpty, MinLength } from 'class-validator';
-import ValidationMessages from 'src/common/validation-messages';
+import ValidationMessages from 'src/commons/validation-messages';
 import { Match } from '../match.decorator';
 
 export class UserCreateDto {

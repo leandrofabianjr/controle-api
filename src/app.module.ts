@@ -6,10 +6,11 @@ import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
 import { UsersController } from './users/users.controller';
 import { ProductsModule } from './products/products.module';
-import { MethodOverrideMiddleware } from './common/method-override.middleware';
+import { MethodOverrideMiddleware } from './commons/method-override.middleware';
 import { CustomersModule } from './customers/customers.module';
 import { OrdersModule } from './orders/orders.module';
-import { ViewsService } from './views/views.service';
+import { ResponseService } from './commons/response/response.service';
+import { CommonsModule } from './commons/commons.module';
 
 @Module({
   imports: [
@@ -19,9 +20,9 @@ import { ViewsService } from './views/views.service';
     ProductsModule,
     CustomersModule,
     OrdersModule,
+    CommonsModule,
   ],
   controllers: [AppController, UsersController],
-  providers: [ViewsService],
 })
 export class AppModule {
   configure(consumer: MiddlewareConsumer) {
