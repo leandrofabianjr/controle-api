@@ -12,10 +12,13 @@ import { Response } from 'express';
 import { AuthExceptionFilter } from './common/filters/auth-exceptions.filter';
 import { AuthenticatedGuard } from './common/guards/authenticated.guard';
 import { LoginGuard } from './common/guards/login.guard';
+import { ViewsService } from './views/views.service';
 
 @UseFilters(AuthExceptionFilter)
 @Controller()
 export class AppController {
+  constructor(private views: ViewsService) {}
+
   @Get('')
   index(@Res() res: Response) {
     return res.redirect('/dashboard');
@@ -31,7 +34,7 @@ export class AppController {
   @Get('/login')
   loginGet(@Req() req, @Res() res: Response): void {
     const message = req.flash('error-message');
-    return res.render('login', { message });
+    return this.views.render(res, 'login', { message });
   }
 
   @UseGuards(LoginGuard)

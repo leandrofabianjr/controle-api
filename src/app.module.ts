@@ -9,6 +9,7 @@ import { ProductsModule } from './products/products.module';
 import { MethodOverrideMiddleware } from './common/method-override.middleware';
 import { CustomersModule } from './customers/customers.module';
 import { OrdersModule } from './orders/orders.module';
+import { ViewsService } from './views/views.service';
 
 @Module({
   imports: [
@@ -20,6 +21,7 @@ import { OrdersModule } from './orders/orders.module';
     OrdersModule,
   ],
   controllers: [AppController, UsersController],
+  providers: [ViewsService],
 })
 export class AppModule {
   configure(consumer: MiddlewareConsumer) {
