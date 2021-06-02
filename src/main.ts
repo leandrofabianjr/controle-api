@@ -7,8 +7,15 @@ import * as passport from 'passport';
 import session = require('express-session');
 import flash = require('connect-flash');
 import * as handlebarsHelpers from './handlebars-helpers';
+import * as dotenv from 'dotenv';
 
 async function bootstrap() {
+  let err = dotenv.config().error;
+  if (err) {
+    err.message = 'Erro ao carregar .env: ' + err?.message;
+    throw err;
+  }
+
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
 
   app.useStaticAssets(join(__dirname, '..', 'statics'));
@@ -26,7 +33,7 @@ async function bootstrap() {
 
   app.use(
     session({
-      secret: 'very secret',
+      secret: process.env.SESSION_SECRET,
       resave: false,
       saveUninitialized: false,
     }),
@@ -36,6 +43,7 @@ async function bootstrap() {
   app.use(passport.session());
   app.use(flash());
 
-  await app.listen(3000);
+  await app.listen(+process.env.PORT ?? 3000);
 }
+
 bootstrap();

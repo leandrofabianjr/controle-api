@@ -1,5 +1,5 @@
 import { MiddlewareConsumer, Module } from '@nestjs/common';
-import { TypeOrmModule } from '@nestjs/typeorm';
+import { TypeOrmModule, TypeOrmModuleOptions } from '@nestjs/typeorm';
 
 import { AppController } from './app.controller';
 import { AuthModule } from './auth/auth.module';
@@ -9,14 +9,28 @@ import { ProductsModule } from './products/products.module';
 import { MethodOverrideMiddleware } from './commons/method-override.middleware';
 import { CustomersModule } from './customers/customers.module';
 import { OrdersModule } from './orders/orders.module';
-import { ResponseService } from './commons/response/response.service';
 import { CommonsModule } from './commons/commons.module';
+import * as dotenv from 'dotenv';
+
+function getDbConnectionData(): TypeOrmModuleOptions {
+  dotenv.config();
+  return {
+    type: 'postgres',
+    host: process.env.DB_HOST,
+    port: +process.env.DB_PORT,
+    database: process.env.DB_NAME,
+    username: process.env.DB_USER,
+    password: process.env.DB_PASS,
+    entities: ['dist/**/*.entity{.ts,.js}'],
+    synchronize: true,
+  };
+}
 
 @Module({
   imports: [
     AuthModule,
     UsersModule,
-    TypeOrmModule.forRoot(),
+    TypeOrmModule.forRoot(getDbConnectionData()),
     ProductsModule,
     CustomersModule,
     OrdersModule,
