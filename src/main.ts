@@ -10,11 +10,7 @@ import * as handlebarsHelpers from './handlebars-helpers';
 import * as dotenv from 'dotenv';
 
 async function bootstrap() {
-  let err = dotenv.config().error;
-  if (err) {
-    err.message = 'Erro ao carregar .env: ' + err?.message;
-    throw err;
-  }
+  dotenv.config().error;
 
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
 
