@@ -21,6 +21,7 @@ function getDbConnectionData(): TypeOrmModuleOptions {
     database: process.env.DB_NAME,
     username: process.env.DB_USER,
     password: process.env.DB_PASS,
+    ssl: process.env.DB_SSL == 'true',
     entities: ['dist/**/*.entity{.ts,.js}'],
     synchronize: true,
   };
