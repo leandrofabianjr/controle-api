@@ -6,6 +6,7 @@ import { validate } from 'class-validator';
 import { User } from 'src/commons/entities/user.entity';
 import { ServiceException } from 'src/commons/exceptions/service.exception';
 import * as dotenv from 'dotenv';
+import { JwtService } from '@nestjs/jwt';
 
 const SALT_ROUNDS = 10;
 
@@ -13,7 +14,10 @@ export class AuthServiceException extends ServiceException {}
 
 @Injectable()
 export class AuthService implements OnModuleInit {
-  constructor(private readonly usersService: UsersService) {}
+  constructor(
+    private usersService: UsersService,
+    private jwtService: JwtService,
+  ) {}
 
   async onModuleInit(): Promise<void> {
     dotenv.config();
@@ -67,5 +71,23 @@ export class AuthService implements OnModuleInit {
     }
 
     return null;
+  }
+
+  async validateUserJwt(email: string, password: string): Promise<any> {
+    const user = await this.usersService.findOneByEmail(email);
+
+    if (user && (await bcrypt.compare(password, user?.password))) {
+      delete user.password;
+      return user;
+    }
+
+    return null;
+  }
+
+  async loginJwt(user: User) {
+    const payload = { sub: user.id };
+    return {
+      access_token: this.jwtService.sign(payload),
+    };
   }
 }
