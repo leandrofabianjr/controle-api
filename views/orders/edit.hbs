@@ -26,10 +26,9 @@
         <input class="form-control" type="date" id="order-date" name="dateToBeDone" />
         {{/inputWithError}}
       </div>
-
-
     </form>
-    <div class="card {{#ifError 'products'}}border-danger is-invalid{{/ifError}}">
+
+    <div class="card {{#ifError 'items'}}border-danger is-invalid{{/ifError}}">
       <div class="card-body">
         <h5 class="card-title">Produtos da Encomenda</h5>
 
@@ -58,7 +57,7 @@
         <ul id="order-product-list" class="list-group"></ul>
       </div>
     </div>
-    {{#invalidFeedback 'products'}}{{/invalidFeedback}}
+    {{#invalidFeedback 'items'}}{{/invalidFeedback}}
 
     <div class="d-flex justify-content-between mt-3">
       <a class="btn btn-light" href="/orders">Voltar</a>
@@ -67,6 +66,6 @@
   </div>
 </main>
 
-<textarea id="initialProducts" disabled="disabled" style="display: none;">{{ json itemsJson }}</textarea>
+<textarea id="initialItems" disabled="disabled" style="display: none;">{{ json dto.items }}</textarea>
 
 <script src=" /js/orders.js"></script>

@@ -46,15 +46,9 @@ export class OrdersController {
 
     const context = req.flash('context')[0] || {};
 
-    const itemsJson = await this.ordersService.getItemsJson(
-      context?.dto?.products,
-      context?.dto?.productsQuantities,
-    );
-
     return this.resService.render(res, 'orders/create.hbs', {
       customers,
       products,
-      itemsJson,
       ...context,
     });
   }
@@ -100,16 +94,10 @@ export class OrdersController {
     const customers = await this.customersService.filter();
     const products = await this.productsService.filter();
 
-    const itemsJson = await this.ordersService.getItemsJson(
-      context?.dto?.products,
-      context?.dto?.productsQuantities,
-    );
-
     return this.resService.render(res, 'orders/edit.hbs', {
       id,
       customers,
       products,
-      itemsJson,
       ...context,
     });
   }

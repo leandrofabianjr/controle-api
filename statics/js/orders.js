@@ -1,43 +1,30 @@
 const $orderForm = document.getElementById('order-form');
-const $addProductForm = document.getElementById('order-add-product-form');
+const $addItemForm = document.getElementById('order-add-product-form');
 const $newProductSelect = document.getElementById('order-new-product');
-const $newProductQuantityInput = document.getElementById(
+const $newItemQuantityInput = document.getElementById(
   'order-new-product-quantity',
 );
 const $orderProductList = document.getElementById('order-product-list');
 
-function removeProductFromOrder(id) {
+function removeItemFromOrder(id) {
   const $item = $orderProductList.querySelector(`li[data-id="${id}"]`);
-  if ($item) {
-    $orderProductList.removeChild($item);
-  }
+  $item?.remove($item);
 
-  const $productInput = $orderForm.querySelector(`input[value="${id}"]`);
-  if ($productInput) {
-    $productInput?.remove();
-  }
-
-  const $productQuantityInput = $orderForm.querySelector(
-    `input[data-id="${id}"]`,
-  );
-  if ($productQuantityInput) {
-    $productQuantityInput?.remove();
-  }
+  const $itemInput = $orderForm.querySelector(`input[data-id="${id}"]`);
+  $itemInput?.remove();
 }
 
-function buildProductInput(id, quantity) {
-  const $productInput = document.createElement('input');
-  $productInput.type = 'hidden';
-  $productInput.name = 'products[]';
-  $productInput.value = id;
-  $orderForm.appendChild($productInput);
-
-  const $productQuantityInput = document.createElement('input');
-  $productQuantityInput.type = 'hidden';
-  $productQuantityInput.name = 'productsQuantities[]';
-  $productQuantityInput.dataset.id = id;
-  $productQuantityInput.value = quantity;
-  $orderForm.appendChild($productQuantityInput);
+function buildItemInput(id, name, quantity) {
+  const $itemInput = document.createElement('input');
+  $itemInput.type = 'hidden';
+  $itemInput.name = 'items[]';
+  $itemInput.value = JSON.stringify({
+    product: id,
+    productName: name,
+    quantity: quantity,
+  });
+  $itemInput.dataset.id = id;
+  $orderForm.appendChild($itemInput);
 }
 
 function buildProductListItem(id, name, quantity) {
@@ -47,35 +34,33 @@ function buildProductListItem(id, name, quantity) {
   $newProductListItem.innerHTML = `
       <span class="flex-grow-1 m-auto">${name}</span>
       <span class="mx-4 m-auto">${quantity}</span>
-      <button class="btn btn-link" type="button" onclick="removeProductFromOrder('${id}')">Remover</button>
+      <button class="btn btn-link" type="button" onclick="removeItemFromOrder('${id}')">Remover</button>
     `;
   $orderProductList.appendChild($newProductListItem);
 }
 
 function resetAddProductForm() {
   $newProductSelect.selectedIndex = 0;
-  $newProductQuantityInput.value = '';
-  $newProductQuantityInput.disabled = 'disabled';
+  $newItemQuantityInput.value = '';
+  $newItemQuantityInput.disabled = 'disabled';
 }
 
 function newProductSelectChange() {
   const $selectedOption =
     $newProductSelect.options[$newProductSelect.selectedIndex];
-  $newProductQuantityInput.disabled = $selectedOption.value
-    ? false
-    : 'disabled';
+  $newItemQuantityInput.disabled = $selectedOption.value ? false : 'disabled';
 }
 
 function addProductToOrder(id, name, quantity) {
-  removeProductFromOrder(id);
+  removeItemFromOrder(id);
 
   buildProductListItem(id, name, quantity);
-  buildProductInput(id, quantity);
+  buildItemInput(id, name, quantity);
 
   $newProductSelect.focus();
 }
 
-function orderAddProductFormSubmit(ev) {
+function orderAddItemFormSubmit(ev) {
   ev.preventDefault();
 
   const $selectedOption =
@@ -83,20 +68,19 @@ function orderAddProductFormSubmit(ev) {
   addProductToOrder(
     $selectedOption.value,
     $selectedOption.text,
-    +$newProductQuantityInput.value,
+    +$newItemQuantityInput.value,
   );
 
   resetAddProductForm();
 }
 
 function buildInitialProductsListItems() {
-  var jsonElement = document.getElementById('initialProducts');
-  var products = JSON.parse(jsonElement.value);
-  console.log(products);
-  products.forEach((p) => addProductToOrder(p?.id, p?.name, p?.quantity));
+  var jsonElement = document.getElementById('initialItems');
+  var products = jsonElement.value ? JSON.parse(jsonElement.value) : [];
+  products.forEach((p) => addProductToOrder(p?.product, p?.productName, p?.quantity));
 }
 
 $newProductSelect.addEventListener('change', newProductSelectChange);
-$addProductForm.addEventListener('submit', orderAddProductFormSubmit);
+$addItemForm.addEventListener('submit', orderAddItemFormSubmit);
 
 buildInitialProductsListItems();

@@ -89,50 +89,26 @@ export class OrdersService {
     order.customer = customer;
 
     const products = await this.productsService.filter({
-      where: { id: In(dto.products) },
+      where: { id: In(dto.items.map((i) => i.product)) },
     });
-    if (products.length != dto.products?.length) {
-      const message = ReturnMessage.Danger('Algum dos produtos não existe');
-      throw new OrderServiceException({ message, dto });
-    }
 
-    if (dto.products?.length != dto.productsQuantities.length) {
-      const message = ReturnMessage.Danger(
-        'Cada produto deve ter uma quantidade',
-      );
+    if (products.length != dto.items?.length) {
+      const message = ReturnMessage.Danger('Algum dos produtos não existe');
       throw new OrderServiceException({ message, dto });
     }
 
     const dateToBeDone = new Date(dto.dateToBeDone);
     dateToBeDone.setHours(0, 0, 0);
+    dateToBeDone.setDate(dateToBeDone.getDate() + 1);
     order.dateToBeDone = dateToBeDone;
 
-    order.items = products.map((p, index) => {
+    order.items = dto.items.map((item) => {
       const orderitem = new OrderItem();
-      orderitem.product = p;
-      orderitem.quantity = +dto.productsQuantities[index];
+      orderitem.product = products.find((p) => p.id == item.product);
+      orderitem.quantity = +item.quantity;
       return orderitem;
     });
 
     return order;
-  }
-
-  async getItemsJson(
-    productsIds: string[],
-    quantities: number[],
-  ): Promise<any> {
-    let itemsJson: { id: string; name: string; quantity: number }[];
-
-    if (Array.isArray(productsIds)) {
-      const result = await this.productsService.filter({
-        where: { id: In(productsIds) },
-      });
-      itemsJson = result.map((p) => {
-        const index = productsIds.findIndex((pId) => pId == p.id);
-        return { id: p.id, name: p.name, quantity: quantities[index] };
-      });
-    }
-
-    return itemsJson;
   }
 }
