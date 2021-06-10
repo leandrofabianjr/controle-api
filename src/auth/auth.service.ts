@@ -73,8 +73,8 @@ export class AuthService implements OnModuleInit {
     return null;
   }
 
-  async validateUserJwt(email: string, password: string): Promise<any> {
-    const user = await this.usersService.findOneByEmail(email);
+  async validateUserJwt(username: string, password: string): Promise<any> {
+    const user = await this.usersService.findOneByEmail(username);
 
     if (user && (await bcrypt.compare(password, user?.password))) {
       delete user.password;
@@ -87,7 +87,7 @@ export class AuthService implements OnModuleInit {
   async loginJwt(user: User) {
     const payload = { sub: user.id };
     return {
-      access_token: this.jwtService.sign(payload),
+      access: this.jwtService.sign(payload),
     };
   }
 }

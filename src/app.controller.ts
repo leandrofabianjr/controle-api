@@ -11,6 +11,7 @@ import { Response } from 'express';
 import { AuthService } from './auth/auth.service';
 import { AuthExceptionFilter } from './commons/filters/auth-exceptions.filter';
 import { AuthenticatedGuard } from './commons/guards/authenticated.guard';
+import { JwtAuthGuard } from './commons/guards/jwt-auth.guard';
 import { LoginGuard } from './commons/guards/login.guard';
 import { ResponseService } from './commons/response/response.service';
 
@@ -45,9 +46,15 @@ export class AppController {
   }
 
   @UseGuards(LoginGuard)
-  @Post('/login/jwt')
+  @Post('/jwt/token')
   loginJwt(@Req() req) {
     return this.authService.loginJwt(req.user);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Post('/jwt/check')
+  checkJwt(@Res() res: Response) {
+    return res.status(200);
   }
 
   @UseGuards(AuthenticatedGuard)

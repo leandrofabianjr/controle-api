@@ -14,11 +14,9 @@ export class AuthExceptionFilter implements ExceptionFilter {
     const ctx = host.switchToHttp();
     const response = ctx.getResponse<Response>();
 
-    if (
-      exception instanceof UnauthorizedException ||
-      exception instanceof ForbiddenException
-    ) {
-      response.redirect('/login');
+    if (exception instanceof UnauthorizedException) {
+      const message = 'E-mail ou senha incorreto(s)';
+      response.json({ message });
     }
   }
 }
