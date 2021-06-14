@@ -16,7 +16,7 @@ export class AuthExceptionFilter implements ExceptionFilter {
 
     if (exception instanceof UnauthorizedException) {
       const message = 'E-mail ou senha incorreto(s)';
-      response.json({ message });
+      response.status(401).json({ message });
     }
   }
 }

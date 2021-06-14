@@ -28,10 +28,10 @@ export class User {
   isActive: boolean;
 
   @CreateDateColumn()
-  created!: Date;
+  createdAt!: Date;
 
   @UpdateDateColumn()
-  updated!: Date;
+  updatedAt!: Date;
 
   @DeleteDateColumn()
   deletedAt?: Date;

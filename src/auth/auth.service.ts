@@ -88,6 +88,7 @@ export class AuthService implements OnModuleInit {
     const payload = { sub: user.id };
     return {
       access: this.jwtService.sign(payload),
+      user,
     };
   }
 }
