@@ -14,7 +14,6 @@ import {
 } from '@nestjs/common';
 import { Response } from 'express';
 import { AuthExceptionFilter } from 'src/commons/filters/auth-exceptions.filter';
-import { AuthenticatedGuard } from 'src/commons/guards/authenticated.guard';
 import ReturnMessage from 'src/commons/utils/return-message';
 import { ResponseService } from 'src/commons/response/response.service';
 import {
@@ -22,10 +21,11 @@ import {
   CustomersService,
 } from './customers.service';
 import { CustomerCreateDto } from './dtos/customer.dto';
+import { JwtAuthGuard } from 'src/commons/guards/jwt-auth.guard';
 
 @Controller('customers')
 @UseFilters(AuthExceptionFilter)
-@UseGuards(AuthenticatedGuard)
+@UseGuards(JwtAuthGuard)
 export class CustomersController {
   constructor(
     private resService: ResponseService,
@@ -34,9 +34,8 @@ export class CustomersController {
 
   @Get('')
   async index(@Res() res) {
-    const customers = await this.customersService.filter();
-
-    this.resService.render(res, 'customers/index.hbs', { customers });
+    return await this.customersService.filter();
+    // this.resService.render(res, 'customers/index.hbs', { customers });
   }
 
   @Get(':id/edit')
