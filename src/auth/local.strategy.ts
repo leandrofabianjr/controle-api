@@ -6,10 +6,11 @@ import { AuthService } from './auth.service';
 @Injectable()
 export class LocalStrategy extends PassportStrategy(Strategy) {
   constructor(private readonly authService: AuthService) {
-    super();
+    super({});
   }
 
   async validate(email: string, password: string) {
+    console.log('validando Local');
     const user = await this.authService.validateUser(email, password);
     if (!user) {
       throw new UnauthorizedException();

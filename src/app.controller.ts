@@ -23,27 +23,15 @@ export class AppController {
     private authService: AuthService,
   ) {}
 
-  @Get('')
-  index(@Res() res: Response) {
-    return res.redirect('/dashboard');
-  }
+  // @Get('')
+  // index(@Res() res: Response) {
+  //   return res.redirect('/dashboard');
+  // }
 
-  @Get('signup')
-  createUser(@Res() res: Response): void {
-    return this.resService.render(res, 'signup');
-  }
-
-  @Get('/login')
-  loginGet(@Req() req, @Res() res: Response): void {
-    const message = req.flash('error-message');
-    return this.resService.render(res, 'login', { message });
-  }
-
-  @UseGuards(LoginGuard)
-  @Post('/login')
-  login(@Res() res: Response) {
-    return res.redirect('/');
-  }
+  // @Get('signup')
+  // createUser(@Res() res: Response): void {
+  //   return this.resService.render(res, 'signup');
+  // }
 
   @UseGuards(LoginGuard)
   @Post('/jwt/token')

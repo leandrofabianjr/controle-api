@@ -23,9 +23,9 @@ import {
 import { CustomerCreateDto } from './dtos/customer.dto';
 import { JwtAuthGuard } from 'src/commons/guards/jwt-auth.guard';
 
-@Controller('customers')
 @UseFilters(AuthExceptionFilter)
 @UseGuards(JwtAuthGuard)
+@Controller('customers')
 export class CustomersController {
   constructor(
     private resService: ResponseService,
@@ -33,9 +33,9 @@ export class CustomersController {
   ) {}
 
   @Get('')
-  async index(@Res() res) {
+  async index() {
+    console.log('listando');
     return await this.customersService.filter();
-    // this.resService.render(res, 'customers/index.hbs', { customers });
   }
 
   @Get(':id/edit')
