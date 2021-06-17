@@ -32,7 +32,7 @@ export class ProductsService {
       const message = ReturnMessage.Danger(
         'Por favor, confira os dados preenchidos',
       );
-      throw new ProductServiceException({ message, dto, errors });
+      throw new ProductServiceException({ message, errors });
     }
 
     const products = await this.filter({ name: dto.name });
@@ -41,7 +41,7 @@ export class ProductsService {
       const message = ReturnMessage.Danger(
         'Já existe um produto com o nome informado',
       );
-      throw new ProductServiceException({ dto, message });
+      throw new ProductServiceException({ message });
     }
 
     const entity = this.repository.create(dto);
@@ -56,7 +56,7 @@ export class ProductsService {
       const message = ReturnMessage.Danger(
         'Por favor, confira os dados preenchidos',
       );
-      throw new ProductServiceException({ message, dto, errors });
+      throw new ProductServiceException({ message, errors });
     }
 
     const products = await this.filter({ name: dto.name });
@@ -65,14 +65,14 @@ export class ProductsService {
       const message = ReturnMessage.Danger(
         'Já existe um produto com o nome informado',
       );
-      throw new ProductServiceException({ dto, message });
+      throw new ProductServiceException({ message });
     }
 
     const product = await this.get(id);
 
     if (!product) {
       const message = ReturnMessage.Danger('O produto não existe');
-      throw new ProductServiceException({ dto, message });
+      throw new ProductServiceException({ message });
     }
 
     const entity = this.repository.create({ id, ...dto });

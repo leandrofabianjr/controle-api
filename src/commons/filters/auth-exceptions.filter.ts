@@ -15,7 +15,7 @@ export class AuthExceptionFilter implements ExceptionFilter {
     const response = ctx.getResponse<Response>();
 
     if (exception instanceof UnauthorizedException) {
-      const message = 'E-mail ou senha incorreto(s)';
+      const message = 'Você não tem permissão para fazer isso.';
       response.status(401).json({ message });
     }
   }

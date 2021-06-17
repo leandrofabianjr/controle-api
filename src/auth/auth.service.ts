@@ -47,7 +47,7 @@ export class AuthService implements OnModuleInit {
 
     if (errors.length) {
       const message = 'Por favor, confira os dados preenchidos';
-      throw new AuthServiceException({ message, dto, errors });
+      throw new AuthServiceException({ message, errors });
     }
 
     dto.password = hashedPassword;
@@ -56,7 +56,7 @@ export class AuthService implements OnModuleInit {
 
     if (!user) {
       const message = 'Desculpe! Não foi possível criar o usuário';
-      throw new AuthServiceException({ dto, message });
+      throw new AuthServiceException({ message });
     }
 
     return user;

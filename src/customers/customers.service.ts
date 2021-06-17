@@ -32,7 +32,7 @@ export class CustomersService {
       const message = ReturnMessage.Danger(
         'Por favor, confira os dados preenchidos',
       );
-      throw new CustomerServiceException({ message, dto, errors });
+      throw new CustomerServiceException({ message, errors });
     }
 
     const entity = this.repository.create(dto);
@@ -47,14 +47,14 @@ export class CustomersService {
       const message = ReturnMessage.Danger(
         'Por favor, confira os dados preenchidos',
       );
-      throw new CustomerServiceException({ message, dto, errors });
+      throw new CustomerServiceException({ message, errors });
     }
 
     const customer = await this.get(id);
 
     if (!customer) {
       const message = ReturnMessage.Danger('O cliente não existe');
-      throw new CustomerServiceException({ dto, message });
+      throw new CustomerServiceException({ message });
     }
 
     const entity = this.repository.create({ id, ...dto });

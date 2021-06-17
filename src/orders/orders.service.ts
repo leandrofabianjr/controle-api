@@ -40,7 +40,7 @@ export class OrdersService {
     } catch (ex) {
       console.error(ex);
       const message = ReturnMessage.Danger('Problema ao salvar a encomenda');
-      throw new OrderServiceException({ message, dto });
+      throw new OrderServiceException({ message });
     }
   }
 
@@ -52,7 +52,7 @@ export class OrdersService {
       const message = ReturnMessage.Danger(
         'Por favor, confira os dados preenchidos',
       );
-      throw new OrderServiceException({ message, dto, errors });
+      throw new OrderServiceException({ message, errors });
     }
 
     const entity = await this.dtoToEntity(dto);
@@ -67,7 +67,7 @@ export class OrdersService {
       const message = ReturnMessage.Danger(
         'Por favor, confira os dados preenchidos',
       );
-      throw new OrderServiceException({ message, dto, errors });
+      throw new OrderServiceException({ message, errors });
     }
 
     const order = await this.dtoToEntity(dto);
@@ -84,7 +84,7 @@ export class OrdersService {
     const customer = await this.customersService.get(dto.customer);
     if (!customer) {
       const message = ReturnMessage.Danger('O cliente informado não existe');
-      throw new OrderServiceException({ message, dto });
+      throw new OrderServiceException({ message });
     }
     order.customer = customer;
 
@@ -94,7 +94,7 @@ export class OrdersService {
 
     if (products.length != dto.items?.length) {
       const message = ReturnMessage.Danger('Algum dos produtos não existe');
-      throw new OrderServiceException({ message, dto });
+      throw new OrderServiceException({ message });
     }
 
     const dateToBeDone = new Date(dto.dateToBeDone);
