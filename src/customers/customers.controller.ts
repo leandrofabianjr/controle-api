@@ -61,28 +61,20 @@ export class CustomersController {
     @Req() req,
     @Res() res: Response,
   ) {
-    let context = {};
-
     try {
       const customer = await this.customersService.create(body);
-      const message = ReturnMessage.Success(
-        `Cliente "${customer.name}" criado com sucesso`,
-      );
-      context = { message };
+      res.status(201).json(customer);
     } catch (ex) {
       console.error(ex);
+      res.status(400);
+
       if (ex instanceof CustomerServiceException) {
-        context = ex.getContext();
+        res.json(ex.getContext());
       } else {
-        const message = ReturnMessage.Danger(
-          'Não foi possível criar o cliente',
-        );
-        context = { message };
+        const message = 'Erro desconhecido';
+        res.json({ message });
       }
     }
-
-    req.flash('context', context);
-    return res.redirect(`/customers/create`);
   }
 
   @Put(':id')

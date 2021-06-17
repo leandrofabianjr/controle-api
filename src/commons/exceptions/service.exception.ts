@@ -4,7 +4,6 @@ import ReturnMessage from '../utils/return-message';
 interface ServiceExceptionContext {
   message?: string | ReturnMessage;
   errors?: ValidationError[];
-  dto?: any;
 }
 
 export class ServiceException extends Error {
