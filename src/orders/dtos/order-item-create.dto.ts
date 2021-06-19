@@ -6,14 +6,11 @@ export class OrderItemCreateDto {
   @IsNotEmpty({ message: ValidationMessages.isNotEmpty() })
   product: string;
 
-  productName: string;
-
   @IsNotEmpty({ message: ValidationMessages.isNotEmpty() })
   quantity: number;
 
   constructor(data: OrderItemCreateDto) {
     this.product = data.product;
-    this.productName = data.productName;
     this.quantity = data.quantity;
   }
 
