@@ -4,10 +4,15 @@ import { validate } from 'class-validator';
 import { Product } from 'src/commons/entities/product.entity';
 import { ServiceException } from 'src/commons/exceptions/service.exception';
 import ReturnMessage from 'src/commons/utils/return-message';
-import { Repository } from 'typeorm';
+import { FindManyOptions, Raw, Repository } from 'typeorm';
 import { ProductCreateDto } from './dto/product-create.dto';
 
 export class ProductServiceException extends ServiceException {}
+
+interface ProductsServiceFilters extends FindManyOptions<Product> {
+  search?: string;
+  limit?: number;
+}
 
 @Injectable()
 export class ProductsService {
@@ -16,8 +21,17 @@ export class ProductsService {
     private repository: Repository<Product>,
   ) {}
 
-  filter(params?: { name?: string; where?: any }): Promise<Product[]> {
-    return this.repository.find(params);
+  filter(options?: ProductsServiceFilters): Promise<Product[]> {
+    if (options?.search?.length) {
+      options.where = {
+        name: Raw((v) => `LOWER(${v}) Like 'LOWER('%:value%')'`, {
+          value: options.search,
+        }),
+      };
+      delete options.search;
+    }
+    this.repository.createQueryBuilder('products').select();
+    return this.repository.find(options);
   }
 
   get(id: string): Promise<Product> {
@@ -35,7 +49,9 @@ export class ProductsService {
       throw new ProductServiceException({ message, errors });
     }
 
-    const products = await this.filter({ name: dto.name });
+    const products = await this.filter({
+      name: dto.name,
+    } as FindManyOptions<Product>);
 
     if (products.length > 0) {
       const message = ReturnMessage.Danger(
@@ -59,7 +75,9 @@ export class ProductsService {
       throw new ProductServiceException({ message, errors });
     }
 
-    const products = await this.filter({ name: dto.name });
+    const products = await this.filter({
+      name: dto.name,
+    } as ProductsServiceFilters);
 
     if (products.length > 0 && products.find((p) => p.id != id)) {
       const message = ReturnMessage.Danger(

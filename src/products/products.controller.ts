@@ -6,7 +6,7 @@ import {
   Param,
   Post,
   Put,
-  Render,
+  Query,
   Req,
   Res,
   UseFilters,
@@ -19,6 +19,7 @@ import { Response } from 'express';
 import { AuthExceptionFilter } from 'src/commons/filters/auth-exceptions.filter';
 import { ResponseService } from 'src/commons/response/response.service';
 import { JwtAuthGuard } from 'src/commons/guards/jwt-auth.guard';
+import { ParsePaginatedSearchPipe } from 'src/commons/pipes/parse-paginated-search.pipe';
 
 @UseFilters(AuthExceptionFilter)
 @UseGuards(JwtAuthGuard)
@@ -30,8 +31,9 @@ export class ProductsController {
   ) {}
 
   @Get('')
-  async filter() {
-    return await this.productsService.filter();
+  async filter(@Query(new ParsePaginatedSearchPipe()) params) {
+    console.log('filtered', params);
+    return await this.productsService.filter(params);
   }
 
   @Post('')
