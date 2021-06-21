@@ -6,7 +6,6 @@ import {
   Param,
   Post,
   Put,
-  Render,
   Req,
   Res,
   UseFilters,
@@ -33,8 +32,7 @@ export class CustomersController {
   ) {}
 
   @Get('')
-  async index() {
-    console.log('listando');
+  async filter() {
     return await this.customersService.filter();
   }
 
@@ -50,11 +48,6 @@ export class CustomersController {
     return this.resService.render(res, 'customers/edit.hbs', { id, dto });
   }
 
-  @Get('create')
-  create(@Res() res) {
-    return this.resService.render(res, 'customers/create.hbs');
-  }
-
   @Post('')
   async store(
     @Body() body: CustomerCreateDto,
@@ -63,17 +56,17 @@ export class CustomersController {
   ) {
     try {
       const customer = await this.customersService.create(body);
-      res.status(201).json(customer);
+      return res.status(201).json(customer);
     } catch (ex) {
       console.error(ex);
       res.status(400);
 
       if (ex instanceof CustomerServiceException) {
-        res.json(ex.getContext());
-      } else {
-        const message = 'Erro desconhecido';
-        res.json({ message });
+        return res.json(ex.getContext());
       }
+
+      const message = 'Erro desconhecido';
+      return res.json({ message });
     }
   }
 

@@ -16,13 +16,13 @@ import { ProductCreateDto } from './dto/product-create.dto';
 import { ProductServiceException, ProductsService } from './products.service';
 import ReturnMessage from '../commons/utils/return-message';
 import { Response } from 'express';
-import { AuthenticatedGuard } from 'src/commons/guards/authenticated.guard';
 import { AuthExceptionFilter } from 'src/commons/filters/auth-exceptions.filter';
 import { ResponseService } from 'src/commons/response/response.service';
+import { JwtAuthGuard } from 'src/commons/guards/jwt-auth.guard';
 
-@Controller('products')
-@UseGuards(AuthenticatedGuard)
 @UseFilters(AuthExceptionFilter)
+@UseGuards(JwtAuthGuard)
+@Controller('products')
 export class ProductsController {
   constructor(
     private resService: ResponseService,
@@ -30,15 +30,8 @@ export class ProductsController {
   ) {}
 
   @Get('')
-  async index(@Res() res) {
-    const products = await this.productsService.filter();
-
-    this.resService.render(res, 'products/index.hbs', { products });
-  }
-
-  @Get('create')
-  create(@Res() res) {
-    return this.resService.render(res, 'products/create.hbs');
+  async filter() {
+    return await this.productsService.filter();
   }
 
   @Post('')
@@ -47,28 +40,20 @@ export class ProductsController {
     @Req() req,
     @Res() res: Response,
   ) {
-    let context = {};
-
     try {
       const product = await this.productsService.create(body);
-      const message = ReturnMessage.Success(
-        `Produto "${product.name}" criado com sucesso`,
-      );
-      context = { message };
+      return res.status(201).json(product);
     } catch (ex) {
       console.error(ex);
-      if (ex instanceof ProductServiceException) {
-        context = ex.getContext();
-      } else {
-        const message = ReturnMessage.Danger(
-          'Não foi possível criar o produto',
-        );
-        context = { message };
-      }
-    }
+      res.status(400);
 
-    req.flash('context', context);
-    return res.redirect(`/products/create`);
+      if (ex instanceof ProductServiceException) {
+        return res.json(ex.getContext());
+      }
+
+      const message = 'Erro desconhecido';
+      res.json({ message });
+    }
   }
 
   @Get(':id/edit')
