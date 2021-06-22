@@ -24,8 +24,8 @@ export class ProductsService {
   filter(options?: ProductsServiceFilters): Promise<Product[]> {
     if (options?.search?.length) {
       options.where = {
-        name: Raw((v) => `LOWER(${v}) Like 'LOWER('%:value%')'`, {
-          value: options.search,
+        name: Raw((v) => `LOWER(${v}) Like LOWER(:value)`, {
+          value: `%${options.search}%`,
         }),
       };
       delete options.search;

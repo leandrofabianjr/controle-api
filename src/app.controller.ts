@@ -35,14 +35,16 @@ export class AppController {
 
   @UseGuards(LoginGuard)
   @Post('/jwt/token')
-  loginJwt(@Req() req) {
-    return this.authService.loginJwt(req.user);
+  async loginJwt(@Req() req, @Res() res: Response) {
+    const access = await this.authService.loginJwt(req.user);
+    return res.status(200).json(access);
   }
 
   @UseGuards(JwtAuthGuard)
-  @Post('/jwt/check')
+  @Get('/jwt/check')
   checkJwt(@Res() res: Response) {
-    return res.status(200);
+    console.log('dentro');
+    return res.status(200).json();
   }
 
   @UseGuards(AuthenticatedGuard)
