@@ -2,6 +2,7 @@ import {
   Body,
   Controller,
   Get,
+  InternalServerErrorException,
   NotFoundException,
   Param,
   Post,
@@ -49,14 +50,12 @@ export class CustomersController {
       return res.status(201).json(customer);
     } catch (ex) {
       console.error(ex);
-      res.status(400);
 
       if (ex instanceof CustomerServiceException) {
-        return res.json(ex.getContext());
+        return res.status(400).json(ex.getContext());
       }
 
-      const message = 'Erro desconhecido';
-      return res.json({ message });
+      throw new InternalServerErrorException();
     }
   }
 

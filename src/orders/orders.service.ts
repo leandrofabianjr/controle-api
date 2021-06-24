@@ -4,10 +4,10 @@ import { validate } from 'class-validator';
 import { OrderItem } from 'src/commons/entities/order-item.entity';
 import { Order } from 'src/commons/entities/order.entity';
 import { ServiceException } from 'src/commons/exceptions/service.exception';
-import ReturnMessage from 'src/commons/utils/return-message';
+import { PaginatedServiceFilters } from 'src/commons/interfaces/paginated_service_filters';
 import { CustomersService } from 'src/customers/customers.service';
 import { ProductsService } from 'src/products/products.service';
-import { In, Repository } from 'typeorm';
+import { In, Raw, Repository } from 'typeorm';
 import { OrderCreateDto } from './dtos/order-create.dto';
 
 export class OrderServiceException extends ServiceException {}
@@ -23,8 +23,17 @@ export class OrdersService {
     private productsService: ProductsService,
   ) {}
 
-  filter(params?: any): Promise<Order[]> {
-    return this.repository.find(params);
+  filter(options?: PaginatedServiceFilters<Order>): Promise<Order[]> {
+    if (options?.search?.length) {
+      options.where = {
+        name: Raw((v) => `LOWER(${v}) Like LOWER(:value)`, {
+          value: `%${options.search}%`,
+        }),
+      };
+      delete options.search;
+    }
+
+    return this.repository.find(options);
   }
 
   get(id: string): Promise<Order> {
@@ -36,10 +45,11 @@ export class OrdersService {
       const order = await this.repository.save(entity);
       entity.items.forEach((i) => (i.order = order));
       entity.items = await this.orderItemRepository.save(entity.items);
+      order.items.forEach((i) => (i.order = null));
       return order;
     } catch (ex) {
       console.error(ex);
-      const message = ReturnMessage.Danger('Problema ao salvar a encomenda');
+      const message = 'Problema ao salvar a encomenda';
       throw new OrderServiceException({ message });
     }
   }
@@ -49,9 +59,7 @@ export class OrdersService {
     const errors = await validate(dto);
 
     if (errors.length) {
-      const message = ReturnMessage.Danger(
-        'Por favor, confira os dados preenchidos',
-      );
+      const message = 'Por favor, confira os dados preenchidos';
       throw new OrderServiceException({ message, errors });
     }
 
@@ -64,9 +72,7 @@ export class OrdersService {
     const errors = await validate(dto);
 
     if (errors.length) {
-      const message = ReturnMessage.Danger(
-        'Por favor, confira os dados preenchidos',
-      );
+      const message = 'Por favor, confira os dados preenchidos';
       throw new OrderServiceException({ message, errors });
     }
 
@@ -83,7 +89,7 @@ export class OrdersService {
 
     const customer = await this.customersService.get(dto.customer);
     if (!customer) {
-      const message = ReturnMessage.Danger('O cliente informado não existe');
+      const message = 'O cliente informado não existe';
       throw new OrderServiceException({ message });
     }
     order.customer = customer;
@@ -93,7 +99,7 @@ export class OrdersService {
     });
 
     if (products.length != dto.items?.length) {
-      const message = ReturnMessage.Danger('Algum dos produtos não existe');
+      const message = 'Algum dos produtos não existe';
       throw new OrderServiceException({ message });
     }
 
