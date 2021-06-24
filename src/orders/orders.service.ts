@@ -4,7 +4,8 @@ import { validate } from 'class-validator';
 import { OrderItem } from 'src/commons/entities/order-item.entity';
 import { Order } from 'src/commons/entities/order.entity';
 import { ServiceException } from 'src/commons/exceptions/service.exception';
-import { PaginatedServiceFilters } from 'src/commons/interfaces/paginated_service_filters';
+import { PaginatedResponse } from 'src/commons/interfaces/paginated-response';
+import { PaginatedServiceFilters } from 'src/commons/interfaces/paginated-service-filters';
 import { CustomersService } from 'src/customers/customers.service';
 import { ProductsService } from 'src/products/products.service';
 import { In, Raw, Repository } from 'typeorm';
@@ -23,7 +24,7 @@ export class OrdersService {
     private productsService: ProductsService,
   ) {}
 
-  filter(options?: PaginatedServiceFilters<Order>): Promise<Order[]> {
+  filter(options?: PaginatedServiceFilters<Order>): Promise<PaginatedResponse<Order>> {
     if (options?.search?.length) {
       options.where = {
         name: Raw((v) => `LOWER(${v}) Like LOWER(:value)`, {
@@ -33,7 +34,16 @@ export class OrdersService {
       delete options.search;
     }
 
-    return this.repository.find(options);
+
+
+    const findAndCount = this.repository.findAndCount(options);
+    const res: PaginatedResponse<Order> = {
+      data: findAndCount[0],
+      total: findAndCount[1],
+      limit: options.limit,
+      offset: options.;
+    }
+    return res;
   }
 
   get(id: string): Promise<Order> {

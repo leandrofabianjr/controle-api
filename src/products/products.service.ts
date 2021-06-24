@@ -3,7 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { validate } from 'class-validator';
 import { Product } from 'src/commons/entities/product.entity';
 import { ServiceException } from 'src/commons/exceptions/service.exception';
-import { PaginatedServiceFilters } from 'src/commons/interfaces/paginated_service_filters';
+import { PaginatedServiceFilters } from 'src/commons/interfaces/paginated-service-filters';
 import { Raw, Repository } from 'typeorm';
 import { ProductCreateDto } from './dto/product-create.dto';
 
