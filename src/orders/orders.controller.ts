@@ -39,7 +39,7 @@ export class OrdersController {
   @Get('')
   async filter(@Query(new ParsePaginatedSearchPipe()) params) {
     console.log(params);
-    return await this.ordersService.filter(params);
+    const data = await this.ordersService.filter(params);
   }
 
   @Post('')
