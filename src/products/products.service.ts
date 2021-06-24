@@ -3,17 +3,11 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { validate } from 'class-validator';
 import { Product } from 'src/commons/entities/product.entity';
 import { ServiceException } from 'src/commons/exceptions/service.exception';
-import ReturnMessage from 'src/commons/utils/return-message';
-import { FindManyOptions, Raw, Repository } from 'typeorm';
+import { PaginatedServiceFilters } from 'src/commons/interfaces/paginated_service_filters';
+import { Raw, Repository } from 'typeorm';
 import { ProductCreateDto } from './dto/product-create.dto';
 
 export class ProductServiceException extends ServiceException {}
-
-interface ProductsServiceFilters extends FindManyOptions<Product> {
-  search?: string;
-  limit?: number;
-}
-
 @Injectable()
 export class ProductsService {
   constructor(
@@ -21,7 +15,7 @@ export class ProductsService {
     private repository: Repository<Product>,
   ) {}
 
-  filter(options?: ProductsServiceFilters): Promise<Product[]> {
+  filter(options?: PaginatedServiceFilters<Product>): Promise<Product[]> {
     if (options?.search?.length) {
       options.where = {
         name: Raw((v) => `LOWER(${v}) Like LOWER(:value)`, {
@@ -30,7 +24,7 @@ export class ProductsService {
       };
       delete options.search;
     }
-    this.repository.createQueryBuilder('products').select();
+
     return this.repository.find(options);
   }
 
@@ -43,20 +37,16 @@ export class ProductsService {
     const errors = await validate(dto);
 
     if (errors.length) {
-      const message = ReturnMessage.Danger(
-        'Por favor, confira os dados preenchidos',
-      );
+      const message = 'Por favor, confira os dados preenchidos';
       throw new ProductServiceException({ message, errors });
     }
 
     const products = await this.filter({
       name: dto.name,
-    } as FindManyOptions<Product>);
+    } as PaginatedServiceFilters<Product>);
 
     if (products.length > 0) {
-      const message = ReturnMessage.Danger(
-        'Já existe um produto com o nome informado',
-      );
+      const message = 'Já existe um produto com o nome informado';
       throw new ProductServiceException({ message });
     }
 
@@ -69,27 +59,23 @@ export class ProductsService {
     const errors = await validate(dto);
 
     if (errors.length) {
-      const message = ReturnMessage.Danger(
-        'Por favor, confira os dados preenchidos',
-      );
+      const message = 'Por favor, confira os dados preenchidos';
       throw new ProductServiceException({ message, errors });
     }
 
     const products = await this.filter({
       name: dto.name,
-    } as ProductsServiceFilters);
+    } as PaginatedServiceFilters<Product>);
 
     if (products.length > 0 && products.find((p) => p.id != id)) {
-      const message = ReturnMessage.Danger(
-        'Já existe um produto com o nome informado',
-      );
+      const message = 'Já existe um produto com o nome informado';
       throw new ProductServiceException({ message });
     }
 
     const product = await this.get(id);
 
     if (!product) {
-      const message = ReturnMessage.Danger('O produto não existe');
+      const message = 'O produto não existe';
       throw new ProductServiceException({ message });
     }
 

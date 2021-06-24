@@ -6,6 +6,7 @@ import {
   Param,
   Post,
   Put,
+  Query,
   Req,
   Res,
   UseFilters,
@@ -21,6 +22,7 @@ import {
 } from './customers.service';
 import { CustomerCreateDto } from './dtos/customer.dto';
 import { JwtAuthGuard } from 'src/commons/guards/jwt-auth.guard';
+import { ParsePaginatedSearchPipe } from 'src/commons/pipes/parse-paginated-search.pipe';
 
 @UseFilters(AuthExceptionFilter)
 @UseGuards(JwtAuthGuard)
@@ -32,20 +34,8 @@ export class CustomersController {
   ) {}
 
   @Get('')
-  async filter() {
-    return await this.customersService.filter();
-  }
-
-  @Get(':id/edit')
-  async edit(@Param('id') id: string, @Res() res) {
-    const customer = await this.customersService.get(id);
-    if (!customer) {
-      throw new NotFoundException('Cliente não encontrado');
-    }
-
-    const dto = CustomerCreateDto.fromModel(customer);
-
-    return this.resService.render(res, 'customers/edit.hbs', { id, dto });
+  async filter(@Query(new ParsePaginatedSearchPipe()) params) {
+    return await this.customersService.filter(params);
   }
 
   @Post('')
@@ -68,6 +58,16 @@ export class CustomersController {
       const message = 'Erro desconhecido';
       return res.json({ message });
     }
+  }
+
+  @Get(':id')
+  async get(@Param('id') id: string, @Res() res: Response) {
+    const customer = await this.customersService.get(id);
+    if (!customer) {
+      throw new NotFoundException('Cliente não encontrado');
+    }
+
+    return res.status(200).json(customer);
   }
 
   @Put(':id')

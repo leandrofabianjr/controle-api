@@ -32,8 +32,17 @@ export class ProductsController {
 
   @Get('')
   async filter(@Query(new ParsePaginatedSearchPipe()) params) {
-    console.log('filtered', params);
     return await this.productsService.filter(params);
+  }
+
+  @Get(':id')
+  async get(@Param('id') id: string, @Res() res: Response) {
+    const product = await this.productsService.get(id);
+    if (!product) {
+      throw new NotFoundException('Produto não encontrado');
+    }
+
+    return res.status(200).json(product);
   }
 
   @Post('')
@@ -56,18 +65,6 @@ export class ProductsController {
       const message = 'Erro desconhecido';
       res.json({ message });
     }
-  }
-
-  @Get(':id/edit')
-  async edit(@Param('id') id: string, @Res() res) {
-    const product = await this.productsService.get(id);
-    if (!product) {
-      throw new NotFoundException('Produto não encontrado');
-    }
-
-    const dto = ProductCreateDto.fromModel(product);
-
-    return this.resService.render(res, 'products/edit.hbs', { id, dto });
   }
 
   @Put(':id')

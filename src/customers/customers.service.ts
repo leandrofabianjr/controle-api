@@ -3,8 +3,9 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { validate } from 'class-validator';
 import { Customer } from 'src/commons/entities/customer.entity';
 import { ServiceException } from 'src/commons/exceptions/service.exception';
+import { PaginatedServiceFilters } from 'src/commons/interfaces/paginated_service_filters';
 import ReturnMessage from 'src/commons/utils/return-message';
-import { Repository } from 'typeorm';
+import { FindManyOptions, Raw, Repository } from 'typeorm';
 import { CustomerCreateDto } from './dtos/customer.dto';
 
 export class CustomerServiceException extends ServiceException {}
@@ -16,8 +17,17 @@ export class CustomersService {
     private repository: Repository<Customer>,
   ) {}
 
-  filter(params?: { name?: string }): Promise<Customer[]> {
-    return this.repository.find(params);
+  filter(options?: PaginatedServiceFilters<Customer>): Promise<Customer[]> {
+    if (options?.search?.length) {
+      options.where = {
+        name: Raw((v) => `LOWER(${v}) Like LOWER(:value)`, {
+          value: `%${options.search}%`,
+        }),
+      };
+      delete options.search;
+    }
+
+    return this.repository.find(options);
   }
 
   get(id: string): Promise<Customer> {
