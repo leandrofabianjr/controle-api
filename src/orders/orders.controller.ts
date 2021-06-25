@@ -31,12 +31,7 @@ import { OrderServiceException, OrdersService } from './orders.service';
 @UseFilters(AuthExceptionFilter)
 @UseGuards(JwtAuthGuard)
 export class OrdersController {
-  constructor(
-    private resService: ResponseService,
-    private ordersService: OrdersService,
-    private customersService: CustomersService,
-    private productsService: ProductsService,
-  ) {}
+  constructor(private ordersService: OrdersService) {}
 
   @Get('')
   async filter(
@@ -63,25 +58,16 @@ export class OrdersController {
     }
   }
 
-  @Get(':id/edit')
-  async edit(@Param('id') id: string, @Req() req, @Res() res: Response) {
+  @Get(':id')
+  async edit(@Param('id') id: string, @Res() res: Response) {
     const order = await this.ordersService.get(id);
+    console.log('passou');
+    console.log(order);
     if (!order) {
       throw new NotFoundException('Encomenda não encontrada');
     }
-
-    const context = req.flash('context')[0] || {};
-
-    context.dto = context?.dto ?? OrderCreateDto.fromModel(order);
-    const customers = await this.customersService.filter();
-    const products = await this.productsService.filter();
-
-    return this.resService.render(res, 'orders/edit.hbs', {
-      id,
-      customers,
-      products,
-      ...context,
-    });
+    console.log('finaliza');
+    return res.json(order);
   }
 
   @Put(':id')

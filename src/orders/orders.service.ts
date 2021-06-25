@@ -1,6 +1,6 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { validate } from 'class-validator';
+import { isUUID, validate } from 'class-validator';
 import { OrderItem } from 'src/commons/entities/order-item.entity';
 import { Order } from 'src/commons/entities/order.entity';
 import { ServiceException } from 'src/commons/exceptions/service.exception';
@@ -8,7 +8,7 @@ import { PaginatedResponse } from 'src/commons/interfaces/paginated-response';
 import { PaginatedServiceFilters } from 'src/commons/interfaces/paginated-service-filters';
 import { CustomersService } from 'src/customers/customers.service';
 import { ProductsService } from 'src/products/products.service';
-import { In, Raw, Repository } from 'typeorm';
+import { In, Repository } from 'typeorm';
 import { OrderCreateDto } from './dtos/order-create.dto';
 
 export class OrderServiceException extends ServiceException {}
@@ -38,6 +38,11 @@ export class OrdersService {
   }
 
   get(id: string): Promise<Order> {
+    if (!isUUID(id)) {
+      console.log('não é uuid');
+      return new Promise((resolve) => resolve(null));
+    }
+    console.log('é uuid');
     return this.repository.findOne(id);
   }
 

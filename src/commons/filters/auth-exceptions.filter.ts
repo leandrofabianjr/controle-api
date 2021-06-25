@@ -20,8 +20,12 @@ export class AuthExceptionFilter implements ExceptionFilter {
     }
 
     if (exception instanceof InternalServerErrorException) {
-      const message = 'Erro desconhecido.';
+      const message = 'Erro interno desconhecido.';
       response.status(500).json({ message });
     }
+
+    const status = exception.getStatus();
+    const message = exception.message;
+    response.status(status).json({ message });
   }
 }
