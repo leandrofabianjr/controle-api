@@ -15,8 +15,10 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { Response } from 'express';
+import { Order } from 'src/commons/entities/order.entity';
 import { AuthExceptionFilter } from 'src/commons/filters/auth-exceptions.filter';
 import { JwtAuthGuard } from 'src/commons/guards/jwt-auth.guard';
+import { PaginatedServiceFilters } from 'src/commons/interfaces/paginated-service-filters';
 import { ParsePaginatedSearchPipe } from 'src/commons/pipes/parse-paginated-search.pipe';
 import { ResponseService } from 'src/commons/response/response.service';
 import ReturnMessage from 'src/commons/utils/return-message';
@@ -37,9 +39,12 @@ export class OrdersController {
   ) {}
 
   @Get('')
-  async filter(@Query(new ParsePaginatedSearchPipe()) params) {
+  async filter(
+    @Query(new ParsePaginatedSearchPipe())
+    params: PaginatedServiceFilters<Order>,
+  ) {
     console.log(params);
-    const data = await this.ordersService.filter(params);
+    return await this.ordersService.filter(params);
   }
 
   @Post('')

@@ -24,25 +24,16 @@ export class OrdersService {
     private productsService: ProductsService,
   ) {}
 
-  filter(options?: PaginatedServiceFilters<Order>): Promise<PaginatedResponse<Order>> {
-    if (options?.search?.length) {
-      options.where = {
-        name: Raw((v) => `LOWER(${v}) Like LOWER(:value)`, {
-          value: `%${options.search}%`,
-        }),
-      };
-      delete options.search;
-    }
-
-
-
-    const findAndCount = this.repository.findAndCount(options);
+  async filter(
+    options?: PaginatedServiceFilters<Order>,
+  ): Promise<PaginatedResponse<Order>> {
+    const [data, total] = await this.repository.findAndCount(options);
     const res: PaginatedResponse<Order> = {
-      data: findAndCount[0],
-      total: findAndCount[1],
-      limit: options.limit,
-      offset: options.;
-    }
+      data,
+      total,
+      limit: options?.take,
+      offset: options?.skip,
+    };
     return res;
   }
 
