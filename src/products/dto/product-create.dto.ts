@@ -1,5 +1,4 @@
 import { IsNotEmpty } from 'class-validator';
-import { Product } from 'src/commons/entities/product.entity';
 import ValidationMessages from 'src/commons/validation-messages';
 
 export class ProductCreateDto {
@@ -8,9 +7,5 @@ export class ProductCreateDto {
 
   constructor(data: ProductCreateDto) {
     this.name = data.name;
-  }
-
-  static fromModel(model: Product): ProductCreateDto {
-    return new this(model);
   }
 }

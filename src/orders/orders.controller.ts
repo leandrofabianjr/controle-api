@@ -8,7 +8,6 @@ import {
   Post,
   Put,
   Query,
-  Render,
   Req,
   Res,
   UseFilters,
@@ -20,10 +19,6 @@ import { AuthExceptionFilter } from 'src/commons/filters/auth-exceptions.filter'
 import { JwtAuthGuard } from 'src/commons/guards/jwt-auth.guard';
 import { PaginatedServiceFilters } from 'src/commons/interfaces/paginated-service-filters';
 import { ParsePaginatedSearchPipe } from 'src/commons/pipes/parse-paginated-search.pipe';
-import { ResponseService } from 'src/commons/response/response.service';
-import ReturnMessage from 'src/commons/utils/return-message';
-import { CustomersService } from 'src/customers/customers.service';
-import { ProductsService } from 'src/products/products.service';
 import { OrderCreateDto } from './dtos/order-create.dto';
 import { OrderServiceException, OrdersService } from './orders.service';
 
@@ -38,7 +33,6 @@ export class OrdersController {
     @Query(new ParsePaginatedSearchPipe())
     params: PaginatedServiceFilters<Order>,
   ) {
-    console.log(params);
     return await this.ordersService.filter(params);
   }
 
@@ -61,12 +55,9 @@ export class OrdersController {
   @Get(':id')
   async edit(@Param('id') id: string, @Res() res: Response) {
     const order = await this.ordersService.get(id);
-    console.log('passou');
-    console.log(order);
     if (!order) {
-      throw new NotFoundException('Encomenda não encontrada');
+      throw new NotFoundException();
     }
-    console.log('finaliza');
     return res.json(order);
   }
 
@@ -74,37 +65,24 @@ export class OrdersController {
   async update(
     @Param('id') id: string,
     @Body() body: OrderCreateDto,
-    @Req() req,
     @Res() res: Response,
   ) {
     const order = await this.ordersService.get(id);
     if (!order) {
-      throw new NotFoundException('Encomenda não encontrada');
+      throw new NotFoundException();
     }
-
-    let context = {};
 
     try {
       const order = await this.ordersService.edit(id, body);
-      const message = ReturnMessage.Success(
-        `Emcomenda para "${order.customer.name}" criada com sucesso`,
-      );
-      context = { message };
-      req.flash('context', context);
-      return res.redirect('/orders');
+      return res.json(order);
     } catch (ex) {
       console.error(ex);
+
       if (ex instanceof OrderServiceException) {
-        context = ex.getContext();
-        console.log(context);
-      } else {
-        const message = ReturnMessage.Danger(
-          'Não foi possível criar a encomenda',
-        );
-        context = { message };
+        return res.status(400).json(ex.getContext());
       }
-      req.flash('context', context);
-      return res.redirect(`/orders/${id}/edit`);
+
+      throw new InternalServerErrorException();
     }
   }
 }

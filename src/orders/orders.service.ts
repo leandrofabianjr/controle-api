@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { isUUID, validate } from 'class-validator';
 import { OrderItem } from 'src/commons/entities/order-item.entity';
@@ -111,7 +111,6 @@ export class OrdersService {
 
     const dateToBeDone = new Date(dto.dateToBeDone);
     dateToBeDone.setHours(0, 0, 0);
-    dateToBeDone.setDate(dateToBeDone.getDate() + 1);
     order.dateToBeDone = dateToBeDone;
 
     order.items = dto.items.map((item) => {
