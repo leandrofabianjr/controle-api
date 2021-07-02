@@ -39,10 +39,8 @@ export class OrdersService {
 
   get(id: string): Promise<Order> {
     if (!isUUID(id)) {
-      console.log('não é uuid');
       return new Promise((resolve) => resolve(null));
     }
-    console.log('é uuid');
     return this.repository.findOne(id);
   }
 
@@ -105,7 +103,7 @@ export class OrdersService {
     });
 
     if (products.length != dto.items?.length) {
-      const message = 'Algum dos produtos não existe';
+      const message = 'Algum dos produtos não existe ou está repetido';
       throw new OrderServiceException({ message });
     }
 
