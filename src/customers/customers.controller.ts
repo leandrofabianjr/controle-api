@@ -24,6 +24,7 @@ import {
 import { CustomerCreateDto } from './dtos/customer.dto';
 import { JwtAuthGuard } from 'src/commons/guards/jwt-auth.guard';
 import { ParsePaginatedSearchPipe } from 'src/commons/pipes/parse-paginated-search.pipe';
+import { PaginatedServiceFilters } from 'src/commons/interfaces/paginated-service-filters';
 
 @UseFilters(AuthExceptionFilter)
 @UseGuards(JwtAuthGuard)
@@ -35,7 +36,8 @@ export class CustomersController {
   ) {}
 
   @Get('')
-  async filter(@Query(new ParsePaginatedSearchPipe()) params) {
+  async filter(@Query(new ParsePaginatedSearchPipe()) params: PaginatedServiceFilters<) {
+    params.sea
     return await this.customersService.filter(params);
   }
 

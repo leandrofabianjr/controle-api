@@ -11,11 +11,11 @@ export class UsersService extends BaseService<User, UserCreateDto> {
     super(repository);
   }
 
-  buildDto(data: UserCreateDto): UserCreateDto {
+  async buildDto(data: UserCreateDto): Promise<UserCreateDto> {
     return new UserCreateDto(data);
   }
 
-  buildPartial(dto: UserCreateDto): DeepPartial<User> {
+  async buildPartial(dto: UserCreateDto): Promise<DeepPartial<User>> {
     return dto;
   }
 

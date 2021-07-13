@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
-import { validate } from 'class-validator';
+import { isUUID, validate } from 'class-validator';
 import { ServiceException } from 'src/commons/exceptions/service.exception';
+import { PaginatedResponse } from 'src/commons/interfaces/paginated-response';
 import { PaginatedServiceFilters } from 'src/commons/interfaces/paginated-service-filters';
 import { DeepPartial, Raw, Repository } from 'typeorm';
 
@@ -20,9 +21,9 @@ export abstract class BaseService<T, TDto extends Object> {
     return dto;
   }
 
-  abstract buildDto(data: TDto): TDto;
+  abstract buildDto(data: TDto): Promise<TDto>;
 
-  abstract buildPartial(dto: TDto): DeepPartial<T>;
+  abstract buildPartial(dto: TDto): Promise<DeepPartial<T>>;
 
   async validateBeforeCreate(dto: TDto): Promise<string> {
     return null;
@@ -33,6 +34,9 @@ export abstract class BaseService<T, TDto extends Object> {
   }
 
   get(id: string): Promise<T> {
+    if (!isUUID(id)) {
+      return new Promise((resolve) => resolve(null));
+    }
     return this.repository.findOne(id);
   }
 
@@ -49,6 +53,32 @@ export abstract class BaseService<T, TDto extends Object> {
     return this.repository.find(options);
   }
 
+  async filterPaginated(
+    options?: PaginatedServiceFilters<T>,
+  ): Promise<PaginatedResponse<T>> {
+    if (options?.search?.length) {
+      options.where = {
+        name: Raw((v) => `LOWER(${v}) Like LOWER(:value)`, {
+          value: `%${options.search}%`,
+        }),
+      };
+      delete options.search;
+    }
+
+    const [data, total] = await this.repository.findAndCount(options);
+    const res: PaginatedResponse<T> = {
+      data,
+      total,
+      limit: options?.take,
+      offset: options?.skip,
+    };
+    return res;
+  }
+
+  save(model: T): Promise<T> {
+    return this.repository.save(model);
+  }
+
   async create(data: TDto): Promise<T> {
     const dto = await this.validateDto(data);
 
@@ -57,7 +87,7 @@ export abstract class BaseService<T, TDto extends Object> {
       throw new ServiceException({ message });
     }
 
-    const model = this.buildPartial(dto);
+    const model = await this.buildPartial(dto);
 
     const entity = this.repository.create(model);
     return this.repository.save(entity);
@@ -79,7 +109,7 @@ export abstract class BaseService<T, TDto extends Object> {
       throw new ServiceException({ message });
     }
 
-    const model = this.buildPartial(dto);
+    const model = await this.buildPartial(dto);
 
     const entity = this.repository.create({ id, ...model });
     return this.repository.save(entity);

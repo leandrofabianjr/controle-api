@@ -12,10 +12,10 @@ export class ProductsService extends BaseService<Product, ProductCreateDto> {
     super(repository);
   }
 
-  buildDto(data: ProductCreateDto): ProductCreateDto {
+  async buildDto(data: ProductCreateDto): Promise<ProductCreateDto> {
     return new ProductCreateDto(data);
   }
-  buildPartial(dto: ProductCreateDto): DeepPartial<Product> {
+  async buildPartial(dto: ProductCreateDto): Promise<DeepPartial<Product>> {
     return dto;
   }
 
