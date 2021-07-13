@@ -13,22 +13,19 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { ProductCreateDto } from './dto/product-create.dto';
-import { ProductServiceException, ProductsService } from './products.service';
+import { ProductsService } from './products.service';
 import ReturnMessage from '../commons/utils/return-message';
 import { Response } from 'express';
 import { AuthExceptionFilter } from 'src/commons/filters/auth-exceptions.filter';
-import { ResponseService } from 'src/commons/response/response.service';
 import { JwtAuthGuard } from 'src/commons/guards/jwt-auth.guard';
 import { ParsePaginatedSearchPipe } from 'src/commons/pipes/parse-paginated-search.pipe';
+import { ServiceException } from 'src/commons/exceptions/service.exception';
 
 @UseFilters(AuthExceptionFilter)
 @UseGuards(JwtAuthGuard)
 @Controller('products')
 export class ProductsController {
-  constructor(
-    private resService: ResponseService,
-    private productsService: ProductsService,
-  ) {}
+  constructor(private productsService: ProductsService) {}
 
   @Get('')
   async filter(@Query(new ParsePaginatedSearchPipe()) params) {
@@ -58,7 +55,7 @@ export class ProductsController {
       console.error(ex);
       res.status(400);
 
-      if (ex instanceof ProductServiceException) {
+      if (ex instanceof ServiceException) {
         return res.json(ex.getContext());
       }
 
@@ -84,7 +81,7 @@ export class ProductsController {
       return res.redirect('/products');
     } catch (ex) {
       console.error(ex);
-      if (ex instanceof ProductServiceException) {
+      if (ex instanceof ServiceException) {
         context = ex.getContext();
       } else {
         const message = ReturnMessage.Danger(

@@ -1,34 +1,25 @@
 import { Injectable, OnModuleInit } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { DeepPartial, Repository } from 'typeorm';
 import { User } from 'src/commons/entities/user.entity';
 import { UserCreateDto } from 'src/commons/dto/user-create.dto';
+import { BaseService } from 'src/commons/services/base/base.service';
 
 @Injectable()
-export class UsersService {
-  constructor(
-    @InjectRepository(User)
-    private usersRepository: Repository<User>,
-  ) {}
-
-  async create(dto: UserCreateDto): Promise<User> {
-    const entity = this.usersRepository.create(dto);
-    return this.usersRepository.save<User>(entity);
+export class UsersService extends BaseService<User, UserCreateDto> {
+  constructor(@InjectRepository(User) repository: Repository<User>) {
+    super(repository);
   }
 
-  findAll(): Promise<User[]> {
-    return this.usersRepository.find();
+  buildDto(data: UserCreateDto): UserCreateDto {
+    return new UserCreateDto(data);
   }
 
-  findOne(id: string): Promise<User> {
-    return this.usersRepository.findOne(id);
+  buildPartial(dto: UserCreateDto): DeepPartial<User> {
+    return dto;
   }
 
   findOneByEmail(email: string): Promise<User> {
-    return this.usersRepository.findOne({ email });
-  }
-
-  async remove(id: string): Promise<void> {
-    await this.usersRepository.delete(id);
+    return this.repository.findOne({ email });
   }
 }

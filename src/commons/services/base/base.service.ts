@@ -8,7 +8,7 @@ import { DeepPartial, Raw, Repository } from 'typeorm';
 export abstract class BaseService<T, TDto extends Object> {
   constructor(protected repository: Repository<T>) {}
 
-  private async validateAndBuildModel(data: TDto) {
+  private async validateDto(data: TDto): Promise<TDto> {
     const dto = this.buildDto(data);
     const errors = await validate(dto);
 
@@ -17,17 +17,20 @@ export abstract class BaseService<T, TDto extends Object> {
       throw new ServiceException({ message, errors });
     }
 
-    await this.dataValidation(dto);
-
-    const model = this.buildPartial(dto);
-    return model;
+    return dto;
   }
 
   abstract buildDto(data: TDto): TDto;
 
   abstract buildPartial(dto: TDto): DeepPartial<T>;
 
-  async dataValidation(dto: TDto): Promise<void> {}
+  async validateBeforeCreate(dto: TDto): Promise<string> {
+    return null;
+  }
+
+  async validateBeforeEdit(id: string, dto: TDto): Promise<string> {
+    return null;
+  }
 
   get(id: string): Promise<T> {
     return this.repository.findOne(id);
@@ -47,7 +50,15 @@ export abstract class BaseService<T, TDto extends Object> {
   }
 
   async create(data: TDto): Promise<T> {
-    const model = await this.validateAndBuildModel(data);
+    const dto = await this.validateDto(data);
+
+    const message = await this.validateBeforeCreate(dto);
+    if (message) {
+      throw new ServiceException({ message });
+    }
+
+    const model = this.buildPartial(dto);
+
     const entity = this.repository.create(model);
     return this.repository.save(entity);
   }
@@ -61,8 +72,20 @@ export abstract class BaseService<T, TDto extends Object> {
       throw new ServiceException({ message });
     }
 
-    const model = await this.validateAndBuildModel(data);
+    const dto = await this.validateDto(data);
+
+    const message = await this.validateBeforeEdit(id, dto);
+    if (message) {
+      throw new ServiceException({ message });
+    }
+
+    const model = this.buildPartial(dto);
+
     const entity = this.repository.create({ id, ...model });
     return this.repository.save(entity);
+  }
+
+  async remove(id: string): Promise<void> {
+    await this.repository.delete(id);
   }
 }
