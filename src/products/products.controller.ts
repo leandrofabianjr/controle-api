@@ -20,6 +20,8 @@ import { AuthExceptionFilter } from 'src/commons/filters/auth-exceptions.filter'
 import { JwtAuthGuard } from 'src/commons/guards/jwt-auth.guard';
 import { ParsePaginatedSearchPipe } from 'src/commons/pipes/parse-paginated-search.pipe';
 import { ServiceException } from 'src/commons/exceptions/service.exception';
+import { Product } from 'src/commons/entities/product.entity';
+import { PaginatedServiceFilters } from 'src/commons/interfaces/paginated-service-filters';
 
 @UseFilters(AuthExceptionFilter)
 @UseGuards(JwtAuthGuard)
@@ -28,8 +30,12 @@ export class ProductsController {
   constructor(private productsService: ProductsService) {}
 
   @Get('')
-  async filter(@Query(new ParsePaginatedSearchPipe()) params) {
-    return await this.productsService.filter(params);
+  async filter(
+    @Query(new ParsePaginatedSearchPipe())
+    params: PaginatedServiceFilters<Product>,
+  ) {
+    params.searchFields = ['name'];
+    return await this.productsService.filterPaginated(params);
   }
 
   @Get(':id')

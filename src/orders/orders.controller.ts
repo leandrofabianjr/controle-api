@@ -15,12 +15,13 @@ import {
 } from '@nestjs/common';
 import { Response } from 'express';
 import { Order } from 'src/commons/entities/order.entity';
+import { ServiceException } from 'src/commons/exceptions/service.exception';
 import { AuthExceptionFilter } from 'src/commons/filters/auth-exceptions.filter';
 import { JwtAuthGuard } from 'src/commons/guards/jwt-auth.guard';
 import { PaginatedServiceFilters } from 'src/commons/interfaces/paginated-service-filters';
 import { ParsePaginatedSearchPipe } from 'src/commons/pipes/parse-paginated-search.pipe';
 import { OrderCreateDto } from './dtos/order-create.dto';
-import { OrderServiceException, OrdersService } from './orders.service';
+import { OrdersService } from './orders.service';
 
 @Controller('orders')
 @UseFilters(AuthExceptionFilter)
@@ -33,7 +34,7 @@ export class OrdersController {
     @Query(new ParsePaginatedSearchPipe())
     params: PaginatedServiceFilters<Order>,
   ) {
-    return await this.ordersService.filter(params);
+    return await this.ordersService.filterPaginated(params);
   }
 
   @Post('')
@@ -44,7 +45,7 @@ export class OrdersController {
     } catch (ex) {
       console.error(ex);
 
-      if (ex instanceof OrderServiceException) {
+      if (ex instanceof ServiceException) {
         return res.status(400).json(ex.getContext());
       }
 
@@ -78,7 +79,7 @@ export class OrdersController {
     } catch (ex) {
       console.error(ex);
 
-      if (ex instanceof OrderServiceException) {
+      if (ex instanceof ServiceException) {
         return res.status(400).json(ex.getContext());
       }
 

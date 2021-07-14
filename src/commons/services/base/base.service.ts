@@ -21,6 +21,22 @@ export abstract class BaseService<T, TDto extends Object> {
     return dto;
   }
 
+  private buildOptionsToFilter(
+    options?: PaginatedServiceFilters<T>,
+  ): PaginatedServiceFilters<T> {
+    if (options?.searchFields?.length && options?.search?.length) {
+      options.where = {};
+      options.searchFields.forEach((field) => {
+        options.where[field] = Raw((v) => `LOWER(${v}) Like LOWER(:value)`, {
+          value: `%${options.search}%`,
+        });
+      });
+      delete options.search;
+    }
+    console.log(options);
+    return options;
+  }
+
   abstract buildDto(data: TDto): Promise<TDto>;
 
   abstract buildPartial(dto: TDto): Promise<DeepPartial<T>>;
@@ -41,30 +57,16 @@ export abstract class BaseService<T, TDto extends Object> {
   }
 
   filter(options?: PaginatedServiceFilters<T>): Promise<T[]> {
-    if (options?.search?.length) {
-      options.where = {
-        name: Raw((v) => `LOWER(${v}) Like LOWER(:value)`, {
-          value: `%${options.search}%`,
-        }),
-      };
-      delete options.search;
-    }
-
+    console.log(options);
+    options = this.buildOptionsToFilter(options);
+    console.log(options);
     return this.repository.find(options);
   }
 
   async filterPaginated(
     options?: PaginatedServiceFilters<T>,
   ): Promise<PaginatedResponse<T>> {
-    if (options?.search?.length) {
-      options.where = {
-        name: Raw((v) => `LOWER(${v}) Like LOWER(:value)`, {
-          value: `%${options.search}%`,
-        }),
-      };
-      delete options.search;
-    }
-
+    options = this.buildOptionsToFilter(options);
     const [data, total] = await this.repository.findAndCount(options);
     const res: PaginatedResponse<T> = {
       data,
