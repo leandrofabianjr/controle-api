@@ -9,6 +9,14 @@ import {
 } from 'typeorm';
 import { OrderItem } from './order-item.entity';
 
+export enum UnitOfMeasurement {
+  un = 'un',
+  g = 'g',
+  kg = 'kg',
+  ml = 'ml',
+  l = 'l',
+}
+
 @Entity()
 export class Product {
   @PrimaryGeneratedColumn('uuid')
@@ -16,6 +24,13 @@ export class Product {
 
   @Column()
   name: string;
+
+  @Column({
+    type: 'enum',
+    enum: UnitOfMeasurement,
+    default: UnitOfMeasurement.un,
+  })
+  unitOfMeasurement: UnitOfMeasurement;
 
   @OneToMany(() => OrderItem, (oi) => oi.product)
   orderItems: OrderItem[];
